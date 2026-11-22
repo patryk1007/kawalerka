@@ -45,9 +45,9 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Obiekt mebla: `{id,name,kind,x,z (środek),w (wzdłuż x),d (wzdłuż z),h,rot (stopnie),color,v,hidden}`.
 - `v`: `'all'` | `'dev'` | `'nasz'`. Przełącznik „Łazienka” ustawia `state.bath` i pokazuje odpowiedni wariant.
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
-  bath, wc, washer, shower, rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
+  bath, wc, washer, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
-- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v2`; stary v1 migruje się z zachowaniem pozycji). Po zmianie `DEFAULT` użyj „Reset”
+- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v5`; v1–v4 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
@@ -55,11 +55,14 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 
 ## Kontekst decyzji (stan na 22.11.2026)
 - Etap 3/14: koncepcja układu. Odbiór techniczny od dewelopera do 31.12.2026.
-- Łazienka „Nasz plan” (z inwentaryzacji wod-kan, 02.11.2026):
-  umywalka z szafką w narożniku przy ścianie wejściowej i prawej (x 3,80–4,25, z 0,05–0,70);
-  prysznic narożny 80×80 przy pionie (x 3,45–4,25, z 1,15–1,95);
-  WC podwieszane na stelażu przy ścianie od pokoju (zabudowa x 2,62–3,45, z 1,73–1,95);
-  szafa z pralką w narożniku przy drzwiach (x 2,00–2,62, z 1,30–1,95).
+- Łazienka „Nasz plan” (z inwentaryzacji wod-kan 02.11.2026, zmiany 22.11.2026):
+  umywalka z szafką 60×40 w miejscu dewelopera, przy ścianie wejściowej (x 2,85–3,45, z 0–0,40);
+  zabudowa GK 20 cm wzdłuż ściany od pokoju: stelaż WC (x 2,62–3,35, wys. 1,10) + za prysznicem do sufitu, na szerokość kabiny (x 3,35–4,25), obie z 1,75–1,95;
+  prysznic półokrągły 90×90 w narożniku przy pionie, od lica zabudowy (x 3,35–4,25, z 0,85–1,75);
+  WC podwieszane przed stelażem (x 2,82–3,22, z 1,22–1,75);
+  szafa z pralką do sufitu w narożniku przy drzwiach (x 2,00–2,62, z 1,30–1,95);
+  lustro 60×80 nad umywalką, dół 110 cm (x 2,85–3,45);
+  grzejnik drabinkowy 50×125 na ścianie z umywalką, 115 cm nad podłogą, 16 cm od prawej ściany (x 3,59–4,09; pole `y` = wys. dolnej krawędzi).
   Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
 - Kuchnia = układ dewelopera (L: lodówka + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
   Do ewentualnej zmiany przez użytkownika.

@@ -152,22 +152,28 @@ R('dUm','Umywalka','sink',2.84,3.45,0,.45,.85,COL.white,'dev');
 R('dWan','Wanna 150×70','bath',3.55,4.25,.42,1.92,.56,COL.white,'dev');
 R('dWc','WC','wc',3.05,3.42,1.25,1.95,.42,COL.white,'dev');
 R('dPr','Pralka','washer',2.1,2.7,1.3,1.9,.85,COL.white,'dev');
-// łazienka – nasz plan (z inwentaryzacji wod-kan)
-R('nUm','Umywalka z szafką','sink',3.8,4.25,.05,.7,.85,COL.oak,'nasz');
-R('nPr','Prysznic narożny 80×80','shower',3.45,4.25,1.15,1.95,2,COL.white,'nasz');
-R('nSt','Zabudowa stelaża WC','upper',2.62,3.45,1.73,1.95,1.1,COL.tiles,'nasz');
-R('nWc','WC podwieszane','wc',2.82,3.22,1.2,1.73,.4,COL.white,'nasz');
-R('nSz','Szafa z pralką','wardrobe',2,2.62,1.3,1.95,2.2,COL.oak,'nasz');
+// łazienka – nasz plan (z inwentaryzacji wod-kan, zmiany 22.11.2026)
+R('nUm','Umywalka z szafką 60×40','sink',2.85,3.45,0,.4,.85,COL.oak,'nasz');
+R('nPz','Zabudowa GK za prysznicem (20 cm)','upper',3.35,4.25,1.75,1.95,H,COL.tiles,'nasz');
+R('nPr','Prysznic półokrągły 90×90','showerq',3.35,4.25,.85,1.75,2,COL.white,'nasz');
+R('nSt','Zabudowa stelaża WC (20 cm)','upper',2.62,3.35,1.75,1.95,1.1,COL.tiles,'nasz');
+R('nWc','WC podwieszane','wc',2.82,3.22,1.22,1.75,.4,COL.white,'nasz');
+R('nSz','Szafa z pralką (do sufitu)','wardrobe',2,2.62,1.3,1.95,H,COL.oak,'nasz');
+R('nLu','Lustro 60×80','mirror',2.85,3.45,0,.02,.8,0xc9d6dc,'nasz');DEFAULT[DEFAULT.length-1].y=1.1; // nad umywalką, dół 110 cm
+R('nDr','Grzejnik drabinkowy 50×125','ladder',3.59,4.09,0,.05,1.25,0xf4f4f2,'nasz');DEFAULT[DEFAULT.length-1].y=1.15; // 115 cm nad podłogą, 16 cm od prawej ściany
 const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×200','bed',1.4,2.1,.5,COL.blue],['Sofa rozkładana 200','sofa',2,.95,.85,COL.fabric],['Fotel','chair',.8,.8,.85,COL.fabric],['Biurko 120×60','table',1.2,.6,.75,COL.wood],['Stół 120×80','table',1.2,.8,.75,COL.wood],['Krzesło','chair',.44,.44,.85,COL.dark],['Szafa 100×60','wardrobe',1,.6,2.2,COL.oak],['Regał 80×35','wardrobe',.8,.35,1.9,COL.oak],['Komoda 120×45','tall',1.2,.45,.85,COL.oak],['Wyspa / barek 120×60','tall',1.2,.6,.95,COL.oak],['Dywan 160×230','rug',1.6,2.3,.01,0xc9c1b4],['Roślina','plant',.45,.45,1.3,0x4f7a43]];
 const addSel=document.getElementById('add');
 addSel.innerHTML+=CATALOG.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
 
 let state={bath:'nasz',items:JSON.parse(JSON.stringify(DEFAULT))};
-const KEY='a3-milczanska-uklad-v2';
+const KEY='a3-milczanska-uklad-v5';
 try{let s=JSON.parse(localStorage.getItem(KEY));
- if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v1'));
-  // v1 -> v2: zostają pozycje, kolory domyślnych mebli z nowej palety (kontrast)
-  if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.color=d.color})}
+ if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
+  if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v1'));
+   // v1 -> v2: zostają pozycje, kolory domyślnych mebli z nowej palety (kontrast)
+   if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.color=d.color})}
+  // starsze -> v5: łazienka „Nasz plan” z DEFAULT (zmiany 22.11.2026), reszta mebli zostaje na swoich miejscach
+  if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
  if(s&&s.items)state=s}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
 
@@ -193,6 +199,18 @@ function build(it){
   case'washer':b(0,w,0,h,0,d);{const r=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.02,32),M(0x9fb7c0));r.rotation.x=Math.PI/2;r.position.set(0,h*.5,-d/2-.01);g.add(r)}break;
   case'shower':b(0,w,0,.04,0,d,M(0xeeeeec));
    {const pg=new THREE.Mesh(new THREE.BoxGeometry(.01,h,d),mat.glass);pg.position.set(-w/2,h/2,0);g.add(pg);const pg2=new THREE.Mesh(new THREE.BoxGeometry(w,h,.01),mat.glass);pg2.position.set(0,h/2,-d/2);g.add(pg2)}break;
+  case'showerq':{ // brodzik + szkło półokrągłe; narożnik ścian w lokalnym rogu (+x,+z)
+   const r=Math.min(w,d)*.6,sx=w-r,sz=d-r,cx=-w/2+r,cz=-d/2+r; // r ≈ 55 cm przy 90×90
+   const sh=new THREE.Shape();sh.moveTo(w/2,d/2);sh.lineTo(-w/2,d/2);sh.lineTo(-w/2,cz);
+   sh.absarc(cx,cz,r,Math.PI,Math.PI*1.5,false);sh.lineTo(w/2,-d/2);sh.lineTo(w/2,d/2);
+   const tg=new THREE.ExtrudeGeometry(sh,{depth:.04,bevelEnabled:false});tg.rotateX(Math.PI/2);tg.translate(0,.04,0);
+   const tray=new THREE.Mesh(tg,M(0xeeeeec));tray.receiveShadow=true;g.add(tray);
+   const arc=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,24,1,true,Math.PI,Math.PI/2),mat.glass);arc.position.set(cx,h/2+.04,cz);g.add(arc);
+   if(sz>.005){const p1=new THREE.Mesh(new THREE.BoxGeometry(.01,h,sz),mat.glass);p1.position.set(-w/2,h/2+.04,d/2-sz/2);g.add(p1)}
+   if(sx>.005){const p2=new THREE.Mesh(new THREE.BoxGeometry(sx,h,.01),mat.glass);p2.position.set(w/2-sx/2,h/2+.04,-d/2);g.add(p2)}}break;
+  case'mirror':{const y=it.y||0;b(0,w,y,y+h,0,d,M(0x2b2b2b));const m=new THREE.Mesh(new THREE.BoxGeometry(w-.02,h-.02,.004),new THREE.MeshStandardMaterial({color:0x9fb2ba,metalness:.1,roughness:.25}));m.position.set(0,y+h/2,d/2+.002);g.add(m)}break;
+  case'ladder':{const y=it.y||0,n=Math.max(4,Math.round(h/.1));b(0,.03,y,y+h,0,d);b(w-.03,w,y,y+h,0,d);
+   for(let i=0;i<n;i++){const yy=y+.03+i*(h-.06)/(n-1);b(.03,w-.03,yy-.011,yy+.011,d*.3,d*.7)}}break;
   case'rug':b(0,w,0,.012,0,d);break;
   case'plant':b(w*.2,w*.8,0,.4,d*.2,d*.8,M(0x8a6f55));{const s=new THREE.Mesh(new THREE.SphereGeometry(w*.55,16,12),c);s.position.y=.4+w*.6;s.castShadow=true;g.add(s)}break;
   default:b(0,w,0,h,0,d)}
