@@ -2,7 +2,9 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Kawalerka A3 – spacer 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,13 +13,27 @@
    IDEA: makieta architektoniczna – biała bryła na stole projektanta
    PICTURE: pełnoekranowy model 3D lokalu, panel jak legenda rysunku
    COLOUR and TYPE: biel/grafit, akcent morski #0d7680; Figtree
-   LAYOUT: model na całym ekranie, panel z lewej (na telefonie – wysuwany od dołu) */
+   LAYOUT: model na całym ekranie, panel z lewej (na telefonie – od dołu), chowany przyciskiem */
 :root{color-scheme:light dark;--bg:light-dark(#eef0ee,#15191a);--panel:light-dark(#ffffffee,#1f2526ee);--ink:light-dark(#1a1f20,#e8ecec);--mut:light-dark(#5d6668,#9aa5a7);--acc:#0d7680;--line:light-dark(#d9dddc,#333b3c)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:15px/1.45 Figtree,system-ui,sans-serif}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{touch-action:manipulation}
 #panel{position:fixed;left:14px;top:14px;width:300px;max-height:calc(100% - 28px);overflow:auto;background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 8px 30px #0002}
+body.nopanel #panel{display:none}
+.phead{display:flex;align-items:flex-start;gap:8px}.phead>div{flex:1}
+#hide{min-height:36px;padding:0 10px;flex:none}
+#show{position:fixed;left:calc(14px + env(safe-area-inset-left));top:calc(14px + env(safe-area-inset-top));display:none;background:var(--panel);backdrop-filter:blur(8px);box-shadow:0 4px 16px #0002}
+body.nopanel #show{display:block}
+/* sterowanie dotykiem: joystick spaceru (lewa połowa ekranu) i przyciski widoku z góry */
+#joy{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid #fff9;background:#0003;pointer-events:none;display:none;left:calc(90px + env(safe-area-inset-left));top:calc(100% - 90px - env(safe-area-inset-bottom));opacity:.55}
+#joy.on{opacity:1}#joy i{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:#fffc;box-shadow:0 2px 8px #0004}
+body.touch.walk #joy{display:block}
+body:not(.nopanel) #joy:not(.on){display:none}
+#tb{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));display:none;gap:8px}
+body.top #tb{display:flex}
+#tb button{min-width:48px;min-height:48px;font-size:20px;background:var(--panel);backdrop-filter:blur(8px);box-shadow:0 4px 16px #0002}
 h1{font-size:19px;line-height:1.15;margin:0 0 2px;font-weight:800}
 .sub{color:var(--mut);font-size:13px;margin:0 0 12px}
 .lbl{font-size:13px;color:var(--mut);margin:12px 0 6px;font-weight:600}
@@ -37,26 +53,25 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .help{font-size:13px;color:var(--mut);margin:12px 0 0}
 .help b{color:var(--ink)}
 .note{font-size:12px;color:var(--mut);border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
-#toggle{display:none}
-#hud{position:fixed;right:14px;top:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--mut);pointer-events:none}
+#hud{position:fixed;right:calc(14px + env(safe-area-inset-right));top:calc(14px + env(safe-area-inset-top));max-width:calc(100% - 150px);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--mut);pointer-events:none}
 #copybox{display:none;width:100%;height:90px;font:12px monospace;margin-top:8px}
 #pastetxt{width:100%;height:90px;font:12px monospace;margin-top:8px;box-sizing:border-box}
 @media(max-width:700px){
- #panel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:60%;border-radius:14px 14px 0 0;transform:translateY(calc(100% - 56px));transition:transform .25s}
- #panel.open{transform:none}
- #toggle{display:block;width:100%;margin-bottom:10px}
- #hud{left:14px;right:auto}
+ #panel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:60%;border-radius:14px 14px 0 0;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+ body:not(.nopanel) #tb{display:none}
 }
-@media(prefers-reduced-motion:reduce){#panel{transition:none}}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="hud">Ładowanie modelu…</div>
+<button class="b" id="show" aria-label="Pokaż opcje">☰ Opcje</button>
+<div id="joy" aria-hidden="true"><i></i></div>
+<div id="tb"><button class="b" id="zOut" aria-label="Oddal">−</button><button class="b" id="zIn" aria-label="Przybliż">+</button><button class="b" id="tRot" aria-label="Obróć zaznaczony mebel o 90°" hidden>⟳</button></div>
 <div id="panel">
- <button class="b" id="toggle">☰ Panel</button>
- <h1>Kawalerka A3 · Milczańska 18</h1>
- <p class="sub">27,3 m² · przedpokój, łazienka, pokój z aneksem, ogródek</p>
+ <div class="phead"><div><h1>Kawalerka A3</h1>
+ <p class="sub">27,3 m² · przedpokój, łazienka, pokój z aneksem, ogródek</p></div>
+ <button class="b" id="hide" title="Ukryj opcje (klawisz H)" aria-label="Ukryj opcje">✕</button></div>
  <div class="lbl">Widok</div>
  <div class="seg" id="mode"><button data-m="walk" class="on">Spacer</button><button data-m="top">Z góry</button></div>
  <div class="lbl">Wygląd</div>
@@ -921,11 +936,11 @@ document.querySelectorAll('#tod button').forEach(b=>b.onclick=()=>{tod=b.dataset
 let mode='walk',yaw=Math.PI,pitch=-.05,pos=new THREE.Vector3(1.25,EYE,.8);
 let orb={th:.35,ph:.55,r:13,t:new THREE.Vector3(2.1,0,4.6)};
 const help=document.getElementById('help');
-function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+function setMode(m){mode=m;document.body.classList.toggle('walk',m==='walk');document.body.classList.toggle('top',m==='top');document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
  ceil.visible=m==='walk';wallsG.scale.y=m==='walk'?1:.42;lintG.visible=m==='walk';
  if(REAL){REAL.walls.scale.y=m==='walk'?1:.42;REAL.upper.visible=m==='walk'}
  renderer.shadowMap.needsUpdate=true;rebuild(); // też makieta: szopka bez dachu z góry
- help.innerHTML=m==='walk'?'<b>Komputer:</b> WASD/strzałki – chodzenie, przeciągnij myszą – rozglądanie. <b>Telefon:</b> lewa połowa ekranu – chodzenie, prawa – rozglądanie.':'<b>Przeciągnij mebel</b>, żeby go przesunąć (skok 5 cm). Przeciągnij tło – obrót, kółko/szczypanie – zoom. Kliknij mebel, żeby zmienić wymiary.';
+ help.innerHTML=m==='walk'?'<b>Komputer:</b> WASD/strzałki – chodzenie, przeciągnij myszą – rozglądanie. <b>Telefon/tablet:</b> przytrzymaj palec na lewej połowie ekranu i przesuwaj (joystick) – chodzenie, przeciągaj prawą połową – rozglądanie. <b>H</b> lub ✕ chowa ten panel.':'<b>Przeciągnij mebel</b>, żeby go przesunąć (skok 5 cm). Przeciągnij tło – obrót, kółko/szczypanie lub przyciski +/− – zoom. Kliknij mebel, żeby zmienić wymiary; ⟳ obraca zaznaczony mebel.';
  hud.textContent=(m==='walk'?'Spacer · wysokość oczu 162 cm':'Widok z góry · kliknij mebel')+(style==='real'?' · realistyczny':'')}
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.querySelectorAll('#bath button').forEach(b=>b.onclick=()=>{state.bath=b.dataset.v;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()});
@@ -937,7 +952,17 @@ function markBath(){document.querySelectorAll('#bath button').forEach(b=>b.class
 frSel.onchange=()=>{state.fridge=frSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
 shedSel.onchange=()=>{state.shed=shedSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
 rtvSel.onchange=()=>{state.rtv=rtvSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
-document.getElementById('toggle').onclick=()=>document.getElementById('panel').classList.toggle('open');
+// panel opcji: chowany (✕ / „☰ Opcje” / klawisz H); na telefonie domyślnie schowany, wybór zapamiętany
+const PKEY='a3-milczanska-panel';
+function setPanel(open){document.body.classList.toggle('nopanel',!open);try{localStorage.setItem(PKEY,open?'1':'0')}catch(e){}}
+// dotyk: pokaż joystick, gdy urządzenie ma ekran dotykowy (albo po pierwszym dotknięciu)
+const TOUCH=matchMedia('(pointer:coarse)').matches;if(TOUCH||navigator.maxTouchPoints>0)document.body.classList.add('touch');
+{let p=null;try{p=localStorage.getItem(PKEY)}catch(e){}document.body.classList.toggle('nopanel',p?p==='0':innerWidth<=700||TOUCH)}
+document.getElementById('hide').onclick=()=>setPanel(false);
+document.getElementById('show').onclick=()=>setPanel(true);
+document.getElementById('zIn').onclick=()=>{orb.r=Math.max(3,orb.r/1.25)};
+document.getElementById('zOut').onclick=()=>{orb.r=Math.min(22,orb.r*1.25)};
+document.getElementById('tRot').onclick=()=>{const it=selItem();if(it){it.rot=(it.rot+90)%360;rebuild();save()}};
 
 // ---------- zaznaczanie i edycja ----------
 let selId=null;const selItem=()=>state.items.find(i=>i.id===selId);
@@ -984,27 +1009,31 @@ document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:s
  navigator.clipboard.writeText(txt).then(()=>{hud.textContent='Układ skopiowany – wklej go w czacie'}).catch(()=>{box.style.display='block';box.select()})};
 
 // ---------- wejście ----------
-const keys={};addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[e.code]=true;if(e.code==='KeyR'&&selId&&mode==='top'){const it=selItem();it.rot=(it.rot+90)%360;rebuild()}});
+const keys={};addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;keys[e.code]=true;if(e.code==='KeyH')setPanel(document.body.classList.contains('nopanel'));if(e.code==='KeyR'&&selId&&mode==='top'){const it=selItem();it.rot=(it.rot+90)%360;rebuild()}});
 addEventListener('keyup',e=>keys[e.code]=false);
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),ground=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 function hitFloor(x,y){ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFromCamera(ndc,cam);const p=new THREE.Vector3();return ray.ray.intersectPlane(ground,p)?p:null}
 function pickItem(x,y){ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFromCamera(ndc,cam);const h=ray.intersectObjects(furn.children,true)[0];if(!h)return null;let o=h.object;while(o.parent!==furn)o=o.parent;return o.userData.id}
+// joystick na ekranie: podstawa w miejscu dotknięcia, gałka do 60 px (pełna prędkość); w spoczynku przy lewym dolnym rogu
+const joyEl=document.getElementById('joy'),knob=joyEl.firstChild;
+function joyShow(){joyEl.classList.toggle('on',!!joy);joyEl.style.left=joy?joy.x+'px':'';joyEl.style.top=joy?joy.y+'px':'';
+ const l=joy?Math.min(1,60/(Math.hypot(joy.dx,joy.dy)||1)):0;knob.style.transform=joy?`translate(${joy.dx*l}px,${joy.dy*l}px)`:''}
 const ptrs=new Map();let drag=null,joy=null,look=null,pinch=0,downAt=null;
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});downAt={x:e.clientX,y:e.clientY};
  if(mode==='top'){if(ptrs.size===1){const id=pickItem(e.clientX,e.clientY);if(id){const it=state.items.find(i=>i.id===id);ground.constant=-floorAt(it.x,it.z);const p=hitFloor(e.clientX,e.clientY);if(selId!==id){selId=id;rebuild()}drag={id,dx:it.x-p.x,dz:it.z-p.z}}else drag=null}
   if(ptrs.size===2){drag=null;const[a,b]=[...ptrs.values()];pinch=Math.hypot(a.x-b.x,a.y-b.y)}}
- else{if(e.pointerType==='touch'&&e.clientX<innerWidth/2)joy={id:e.pointerId,x:e.clientX,y:e.clientY,dx:0,dy:0};else look={id:e.pointerId}}
+ else{if(e.pointerType==='touch'&&e.clientX<innerWidth/2&&!joy){joy={id:e.pointerId,x:e.clientX,y:e.clientY,dx:0,dy:0};document.body.classList.add('touch');joyShow()}else look={id:e.pointerId}}
  cv.style.cursor='grabbing'});
 cv.addEventListener('pointermove',e=>{const prev=ptrs.get(e.pointerId);if(!prev)return;const dx=e.clientX-prev.x,dy=e.clientY-prev.y;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
  if(mode==='top'){
   if(ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y);orb.r=Math.min(22,Math.max(3,orb.r*pinch/d));pinch=d;return}
   if(drag){const p=hitFloor(e.clientX,e.clientY);if(!p)return;const it=state.items.find(i=>i.id===drag.id);it.x=Math.round((p.x+drag.dx)*20)/20;it.z=Math.round((p.z+drag.dz)*20)/20;const g=furn.children.find(c=>c.userData.id===it.id);g.position.set(it.x,floorAt(it.x,it.z),it.z);renderer.shadowMap.needsUpdate=true;hud.textContent=`${it.name}: x ${Math.round((it.x-footprint(it)[0]/2)*100)} cm od lewej ściany, ${Math.round((it.z-footprint(it)[1]/2)*100)} cm od ściany wejściowej`}
   else{orb.th-=dx*.006;orb.ph=Math.min(1.45,Math.max(.08,orb.ph-dy*.006))}}
- else{if(joy&&joy.id===e.pointerId){joy.dx=e.clientX-joy.x;joy.dy=e.clientY-joy.y}
+ else{if(joy&&joy.id===e.pointerId){joy.dx=e.clientX-joy.x;joy.dy=e.clientY-joy.y;joyShow()}
   else if(look&&look.id===e.pointerId){yaw-=dx*.005;pitch=Math.min(1.2,Math.max(-1.2,pitch-dy*.005))}}});
 const up=e=>{ptrs.delete(e.pointerId);if(drag){save();drag=null}
  if(mode==='top'&&downAt&&Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)<4&&!pickItem(e.clientX,e.clientY)&&selId){selId=null;rebuild()}
- if(joy&&joy.id===e.pointerId)joy=null;if(look&&look.id===e.pointerId)look=null;cv.style.cursor='grab'};
+ if(joy&&joy.id===e.pointerId){joy=null;joyShow()}if(look&&look.id===e.pointerId)look=null;cv.style.cursor='grab'};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();if(mode==='top')orb.r=Math.min(22,Math.max(3,orb.r*(1+e.deltaY*.001)))},{passive:false});
 
@@ -1012,7 +1041,8 @@ function blocked(x,z){const r=.18;return solids.concat(itemSolids()).some(([a,b,
 function resize(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
 addEventListener('resize',resize);resize();
 let last=performance.now();
-function tick(t){const dt=Math.min(.05,(t-last)/1000);last=t;
+const tRot=document.getElementById('tRot');
+function tick(t){const dt=Math.min(.05,(t-last)/1000);last=t;tRot.hidden=!(mode==='top'&&selId);
  if(mode==='walk'){let f=0,s=0;if(keys.KeyW||keys.ArrowUp)f+=1;if(keys.KeyS||keys.ArrowDown)f-=1;if(keys.KeyA)s-=1;if(keys.KeyD)s+=1;if(keys.ArrowLeft)yaw+=1.8*dt;if(keys.ArrowRight)yaw-=1.8*dt;
   if(joy){f-=Math.max(-1,Math.min(1,joy.dy/60));s+=Math.max(-1,Math.min(1,joy.dx/60))}
   const sp=1.6*dt,fx=-Math.sin(yaw),fz=-Math.cos(yaw),nx=pos.x+(fx*f-fz*s)*sp,nz=pos.z+(fz*f+fx*s)*sp;

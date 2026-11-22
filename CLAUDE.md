@@ -55,7 +55,9 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v10`; v1–v9 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
-  Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
+  Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie albo przyciski +/− = zoom; R albo ⟳ = obrót mebla).
+- Panel opcji chowany (✕ w panelu, „☰ Opcje”, klawisz H; stan w `localStorage` `a3-milczanska-panel`, na telefonie/tablecie domyślnie schowany).
+  Na urządzeniach dotykowych (`body.touch`) w spacerze widać joystick (`#joy`) – podstawa wskakuje pod palec na lewej połowie ekranu.
 - „Kopiuj układ” daje JSON z pozycjami w cm (plus `id`, `rodzaj`), do wklejenia w rozmowie. „Wklej układ” (`applyLayout`) przyjmuje ten tekst albo plik układu:
   meble dopasowuje po `id`, potem po nazwie; brakujące tworzy wg `rodzaj`, widoczne meble spoza listy ukrywa (jak „Usuń”).
 - „Pobierz plik układu” zapisuje pełny stan do `uklad-A3-RRRR-MM-DD_GGMM.json` (`{plik,wersja,zapisano,stan}`), „Wczytaj plik” go przywraca.
