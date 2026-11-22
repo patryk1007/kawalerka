@@ -8,9 +8,11 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Wszystko zostaje w JEDNYM pliku `index.html` (HTML + CSS + JS). Bez bundlera, bez npm.
 - three.js **r128** z CDN: `https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js`
   (API r128: `outputEncoding`, `BoxGeometry` itd. Nie podbijaj wersji bez potrzeby).
+  Tryb realistyczny dociąga dwa dodatki r128 z jsDelivr: `examples/js/objects/Reflector.js` (lustro) i
+  `examples/js/lights/RectAreaLightUniformsLib.js` (światło z drzwi tarasowych). Bez nich działa w uproszczeniu.
 - Uruchomienie: otwórz `index.html` w przeglądarce (albo `npx serve .`).
 - Po każdej zmianie zrób zrzut: `python3 tools/screenshot.py` (wymaga `pip install playwright && playwright install chromium`),
-  potem obejrzyj `shots/*.png`.
+  potem obejrzyj `shots/*.png`. `python3 tools/screenshot.py real` robi tylko kadry trybu realistycznego (`shots/real_*.png`, ok. 1 min).
 - Wymiary podawaj w metrach w kodzie, w cm w UI. Nie zmieniaj geometrii ścian bez prośby użytkownika.
 - Nie twierdź, że ścianę można usunąć. Model nie weryfikuje konstrukcji. Ściany zewnętrzne,
   międzylokalowe, słupek i szacht traktuj jako stałe, nie do ruszania. Karta dewelopera ma
@@ -53,6 +55,20 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
 - „Kopiuj układ” daje JSON z pozycjami w cm, do wklejenia w rozmowie.
+
+## Tryb realistyczny („Wygląd: Makieta | Realistyczny”)
+- Ten sam `state.items` rysowany drugim builderem `buildReal(it)`; `rebuild()` wybiera builder wg `style`. Edycja, warianty i kolizje wspólne.
+- Wybór zapisany w `localStorage` (klucz `a3-milczanska-styl`), link `index.html?styl=real` otwiera od razu ten tryb.
+- `makeReal()` (raz, przy pierwszym włączeniu): tekstury proceduralne w canvasie (`T`, deska, dąb, płytki, kamień, tkanina, trawa…),
+  materiały PBR (`MAT`, fabryka `RM` – kolory w sRGB), mapa otoczenia z PMREM, architektura z tej samej listy `WALLS` co makieta,
+  płytki w łazience, cokoły, drzwi, zasłony, oprawy, obraz, ogród, elewacja, niebo, światła. Grupy: `REAL.walls` (skalowane w widoku z góry),
+  `REAL.upper` (ukrywane z góry: sufit, nadproża, elewacja, lampy), `REAL.base`.
+- Meble budowane w lokalnym układzie „front przy +z” (`frontOf(it)`, wyjątki w `FRONT` po id); `mods` i `sink` odwracane, gdy trzeba.
+  Nowy rodzaj mebla = `case` w `build` (makieta) i w `buildReal`.
+- „Pora dnia” (`applyTod`): dzień = słońce przez drzwi tarasowe + światło okna; wieczór = lampa nad stołem, LED pod szafkami, oprawy.
+- Cienie liczone tylko po zmianie (`renderer.shadowMap.autoUpdate=false`, po zmianie ustaw `renderer.shadowMap.needsUpdate=true`).
+- Materiały, kolory, dekoracje (rośliny, książki, obraz, zasłony, meble ogrodowe) są przykładowe – nie wynikają z decyzji właścicieli.
+- `window.A3` (setStyle, setMode, setTod, view) służy do zrzutów ekranu.
 
 ## Kontekst decyzji (stan na 22.11.2026)
 - Etap 3/14: koncepcja układu. Odbiór techniczny od dewelopera do 31.12.2026.
