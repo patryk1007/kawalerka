@@ -102,6 +102,11 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 <script>
 {
 const H=2.55, DOOR=2.05, GDOOR=2.25, EYE=1.62;
+// ogródek niżej niż mieszkanie: z drzwi tarasowych schodzi się 3 stopniami (22.11.2026; wysokość stopnia przyjęta 17 cm, do zmierzenia)
+// STEPS = [z0,z1,y] stopni na szerokość drzwi (x 1,72–3,42): górny na poziomie podłogi, potem dwa niższe, dalej teren ogródka (GY)
+const RISE=.17, GY=-3*RISE, SX0=1.72, SX1=3.42, STEPS=[[6.95,7.30,0],[7.30,7.60,-RISE],[7.60,7.90,-2*RISE]];
+// wysokość podłoża w punkcie (mieszkanie 0, stopnie, ogródek GY) – dla mebli w ogródku i wysokości oczu w spacerze
+function floorAt(x,z){if(z<6.95)return 0;if(x>=SX0&&x<=SX1)for(const[a,b,y]of STEPS)if(z<b)return y;return GY}
 const hud=document.getElementById('hud');
 if(!window.THREE){hud.textContent='Nie udało się wczytać biblioteki 3D.';throw new Error('no three')}
 const cv=document.getElementById('c');
@@ -144,14 +149,16 @@ box(1.72,3.42,GDOOR-.06,GDOOR,6.74,6.84,mat.frame,lintG);
 // podłogi
 const fl=(x0,x1,z0,z1,m,y=0)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m);p.rotation.x=-Math.PI/2;p.position.set((x0+x1)/2,y,(z0+z1)/2);p.receiveShadow=true;mockG.add(p);return p};
 fl(0,1.88,0,2.07,mat.floor);fl(0,4.25,2.07,6.7,mat.floor);fl(2,4.25,0,1.95,mat.tile);fl(1.72,3.42,6.7,6.95,mat.pave);
-fl(-.15,4.4,6.95,12.2,mat.grass,-.02);fl(1.5,3.65,6.95,8.1,mat.pave,-.01);fl(-30,30,-30,40,M(0xa9b59a),-.05);
+fl(-.15,4.4,6.95,12.2,mat.grass,GY-.02);fl(1.5,3.42,7.9,9,mat.pave,GY-.01);fl(-30,30,-30,40,M(0xa9b59a),GY-.05);
+STEPS.forEach(([a,b,y])=>box(SX0,SX1,GY-.02,y-.005,a,b,mat.pave)); // 3 stopnie z drzwi tarasowych do ogródka
+box(-.25,4.5,GY-.05,-.005,6.7,6.95,mat.ext); // cokół budynku między podłogą mieszkania a terenem ogródka
 const ceil=fl(0,4.25,0,6.7,mat.ceil,H);ceil.rotation.x=Math.PI/2;ceil.castShadow=true;
 const slab=box(-.25,4.5,H,H+.25,-.25,6.95,mat.ext);slab.castShadow=true;slab.material=new THREE.MeshStandardMaterial({colorWrite:false,depthWrite:false});
 solids.push([.75,1.65,-.35,-.2]);
 // ogrodzenie ogródka ~50 cm
-for(let z=7.2;z<=12.2;z+=.75){box(-.17,-.13,0,.5,z,z+.04,M(0x555b55));box(4.38,4.42,0,.5,z,z+.04,M(0x555b55))}
-for(let x=-.15;x<=4.4;x+=.75)box(x,x+.04,0,.5,12.18,12.22,M(0x555b55));
-[[-.15,-.15,6.95,12.2],[4.4,4.4,6.95,12.2],[-.15,4.4,12.2,12.2]].forEach(([a,b,c,d])=>box(a-.01,b+.01,.42,.45,c,d+.01,M(0x555b55)));
+for(let z=7.2;z<=12.2;z+=.75){box(-.17,-.13,GY,GY+.5,z,z+.04,M(0x555b55));box(4.38,4.42,GY,GY+.5,z,z+.04,M(0x555b55))}
+for(let x=-.15;x<=4.4;x+=.75)box(x,x+.04,GY,GY+.5,12.18,12.22,M(0x555b55));
+[[-.15,-.15,6.95,12.2],[4.4,4.4,6.95,12.2],[-.15,4.4,12.2,12.2]].forEach(([a,b,c,d])=>box(a-.01,b+.01,GY+.42,GY+.45,c,d+.01,M(0x555b55)));
 solids.push([-.3,-.1,6.95,12.3],[4.35,4.55,6.95,12.3],[-.3,4.55,12.15,12.3]);
 
 // ---------- meble ----------
@@ -342,7 +349,7 @@ function build(it){
    const qb=(x0,x1,y0,y1,z0,z1,m=c)=>box(x0,x1,y0,y1,z0,z1,m,q),Z0=-D/2,n=Math.max(2,Math.min(4,Math.round(L/.13))); // listwa przy ścianie (tył), trzonki pionowo
    qb(-L/2,L/2,1.46,1.52,Z0,Z0+.03,M(COL.grey));for(let k=0;k<n;k++){const x=-L/2+L*(k+.5)/n;qb(x-.015,x+.015,.3,h,Z0+.035,Z0+.065);qb(x-.012,x+.012,.1,.3,Z0+.02,Z0+.28,M(k===2?0x8a3a2a:COL.grey))}}break;
   default:b(0,w,0,h,0,d)}
- addEdges(g);g.position.set(it.x,0,it.z);g.rotation.y=-it.rot*Math.PI/180;g.userData.id=it.id;return g}
+ addEdges(g);g.position.set(it.x,floorAt(it.x,it.z),it.z);g.rotation.y=-it.rot*Math.PI/180;g.userData.id=it.id;return g}
 const edgeMat=new THREE.LineBasicMaterial({color:0x1c1916});
 const glassEdgeMat=new THREE.LineBasicMaterial({color:0x6d7f86});
 function addEdges(g){const ms=[];g.traverse(o=>{if(o.isMesh)ms.push(o)});ms.forEach(o=>{
@@ -797,7 +804,7 @@ function buildReal(it){
   default:bx(X0,X1,0,h,Z0,Z1,body,.01)}
  const ao=FLOOR_AO[it.kind];
  if(ao&&!(it.y>.05)&&!(it.kind==='wc'&&it.v==='nasz')){const m=new THREE.Mesh(new THREE.PlaneGeometry(it.w+.24,it.d+.24).rotateX(-Math.PI/2),aoFor(ao));m.position.y=.003;m.raycast=()=>{};g.add(m)}
- g.position.set(it.x,0,it.z);g.rotation.y=-it.rot*Math.PI/180;g.userData.id=it.id;return g}
+ g.position.set(it.x,floorAt(it.x,it.z),it.z);g.rotation.y=-it.rot*Math.PI/180;g.userData.id=it.id;return g}
 
 // ---------- architektura, ogród, światła ----------
 function makeReal(){
@@ -848,25 +855,27 @@ function makeReal(){
  // obraz nad sofą
  mesh(boxUV(RB(.03,.56,.76,.004,1)),MAT.blackMetal,.015,1.53,5.35,upper);const art=mesh(new THREE.PlaneGeometry(.7,.5),MAT.art,.031,1.53,5.35,upper,false);art.rotation.y=Math.PI/2;
  // ---- na zewnątrz ----
- plane(-.15,4.4,6.95,12.2,-.02,MAT.grass);plane(1.5,3.65,6.95,8.1,-.01,MAT.pave);plane(-60,60,-60,70,-.05,MAT.grassFar);
+ plane(-.15,4.4,6.95,12.2,GY-.02,MAT.grass);plane(1.5,3.42,7.9,9,GY-.01,MAT.pave);plane(-60,60,-60,70,GY-.05,MAT.grassFar);
+ STEPS.forEach(([a,b,y])=>wbox(SX0,SX1,GY-.02,y-.005,a,b,MAT.pave,base)); // 3 stopnie z drzwi tarasowych do ogródka
  for(const[ax,c,a0,a1]of[['X',-.15,6.95,12.2],['X',4.4,6.95,12.2],['Z',12.2,-.15,4.4]]){
-  for(let s=a0;s<=a1+.01;s+=1.25){const q=Math.min(s,a1);if(ax==='X')wbox(c-.03,c+.03,0,.55,q-.03,q+.03,MAT.fence,base);else wbox(q-.03,q+.03,0,.55,c-.03,c+.03,MAT.fence,base)}
-  [.12,.3,.48].forEach(y=>{if(ax==='X')wbox(c-.01,c+.01,y-.06,y+.06,a0,a1,MAT.fence,base);else wbox(a0,a1,y-.06,y+.06,c-.01,c+.01,MAT.fence,base)})}
- const hedge=(x0,x1,z0,z1,hh)=>mesh(boxUV(RB(x1-x0,hh,z1-z0,.18,3)),MAT.leaves,(x0+x1)/2,hh/2-.05,(z0+z1)/2,base);
+  for(let s=a0;s<=a1+.01;s+=1.25){const q=Math.min(s,a1);if(ax==='X')wbox(c-.03,c+.03,GY,GY+.55,q-.03,q+.03,MAT.fence,base);else wbox(q-.03,q+.03,GY,GY+.55,c-.03,c+.03,MAT.fence,base)}
+  [.12,.3,.48].map(y=>y+GY).forEach(y=>{if(ax==='X')wbox(c-.01,c+.01,y-.06,y+.06,a0,a1,MAT.fence,base);else wbox(a0,a1,y-.06,y+.06,c-.01,c+.01,MAT.fence,base)})}
+ const hedge=(x0,x1,z0,z1,hh)=>mesh(boxUV(RB(x1-x0,hh,z1-z0,.18,3)),MAT.leaves,(x0+x1)/2,GY+hh/2-.05,(z0+z1)/2,base);
  hedge(-.85,-.25,6.95,12.9,1.7);hedge(4.5,5.1,6.95,12.9,1.7);hedge(-.85,5.1,12.3,12.9,1.7);
  const foliage=(r,seed)=>{const geo=new THREE.IcosahedronGeometry(r,2),p=geo.attributes.position,q=rngOf(seed)()*10;
   for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.16*Math.sin(3.1*x/r+q)*Math.sin(2.7*y/r+1+q)*Math.sin(3.3*z/r+2);p.setXYZ(i,x*k,y*k*.9,z*k)}geo.computeVertexNormals();return boxUV(geo)};
- const tree=(x,z,s,seed)=>{const r=rngOf(seed);mesh(new THREE.CylinderGeometry(.07*s,.1*s,1.8*s,10),MAT.bark,x,.9*s,z,base);
-  for(let i=0;i<5;i++)mesh(foliage((.55+r()*.35)*s,seed+i),MAT.leaves,x+(r()-.5)*.9*s,(2.1+r()*1.1)*s,z+(r()-.5)*.9*s,base)};
+ const tree=(x,z,s,seed)=>{const r=rngOf(seed);mesh(new THREE.CylinderGeometry(.07*s,.1*s,1.8*s,10),MAT.bark,x,GY+.9*s,z,base);
+  for(let i=0;i<5;i++)mesh(foliage((.55+r()*.35)*s,seed+i),MAT.leaves,x+(r()-.5)*.9*s,GY+(2.1+r()*1.1)*s,z+(r()-.5)*.9*s,base)};
  const tr=rngOf('las');
  for(let i=0;i<34;i++){const a=tr()*Math.PI*1.25-Math.PI*.12,d=13+tr()*22,x=2.1+Math.cos(a)*d,z=7+Math.sin(a)*d;if(z<7.5)continue;tree(x,z,1.3+tr()*1.4,'f'+i)}
- // stolik i dwa krzesła na tarasie
- mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.3,.72,7.55,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.3,.36,7.55,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.3,.01,7.55,base);
- [[1.82,7.55,Math.PI/2],[2.78,7.55,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,0,z);c.rotation.y=ry;base.add(c);
+ // stolik i dwa krzesła na tarasie (u dołu stopni)
+ const tz=8.5;mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.3,GY+.72,tz,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.3,GY+.36,tz,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.3,GY+.01,tz,base);
+ [[1.82,tz,Math.PI/2],[2.78,tz,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,GY,z);c.rotation.y=ry;base.add(c);
   mesh(boxUV(RB(.42,.03,.42,.008,1)),MAT.fence,0,.45,0,c);mesh(boxUV(RB(.42,.4,.03,.008,1)),MAT.fence,0,.68,-.2,c);[[-.19,-.19],[.19,-.19],[-.19,.19],[.19,.19]].forEach(([a,b])=>mesh(new THREE.CylinderGeometry(.012,.012,.45,8),MAT.fence,a,.225,b,c))});
- plantInto(base,1.3,0,7.25,.7,rngOf('pot1'),.4);
+ plantInto(base,1.35,GY,7.25,.7,rngOf('pot1'),.4);
  // elewacja budynku (3 kondygnacje) z oknami sąsiadów
- const fz=6.95;wbox(-9,1.72,0,9.4,fz,fz+.04,MAT.plaster,upper);wbox(3.42,13,0,9.4,fz,fz+.04,MAT.plaster,upper);wbox(1.72,3.42,GDOOR,9.4,fz,fz+.04,MAT.plaster,upper);
+ const fz=6.95;wbox(-9,1.72,GY-.02,9.4,fz,fz+.04,MAT.plaster,upper);wbox(3.42,13,GY-.02,9.4,fz,fz+.04,MAT.plaster,upper);
+ wbox(-.25,4.5,GY-.05,-.005,6.7,6.95,MAT.plaster2,base); // cokół pod podłogą mieszkania (widoczny też z góry)wbox(1.72,3.42,GDOOR,9.4,fz,fz+.04,MAT.plaster,upper);
  [2.95,5.9].forEach(y=>wbox(-9,13,y-.14,y,fz+.04,fz+.1,MAT.plaster2,upper));wbox(-9,13,9.2,9.4,fz+.04,fz+.12,MAT.plaster2,upper);
  const win=(x0,x1,y0,y1,lit)=>{wbox(x0-.06,x1+.06,y0,y1+.06,fz+.04,fz+.07,fr,upper);wbox(x0,x1,y0+.04,y1,fz+.07,fz+.075,lit?MAT.winLit:MAT.darkGlass,upper,false)};
  [[-3.1,-1.4],[6.2,7.9]].forEach(([a,b])=>win(a,b,0,GDOOR,false));
@@ -982,14 +991,14 @@ function hitFloor(x,y){ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFro
 function pickItem(x,y){ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);ray.setFromCamera(ndc,cam);const h=ray.intersectObjects(furn.children,true)[0];if(!h)return null;let o=h.object;while(o.parent!==furn)o=o.parent;return o.userData.id}
 const ptrs=new Map();let drag=null,joy=null,look=null,pinch=0,downAt=null;
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});downAt={x:e.clientX,y:e.clientY};
- if(mode==='top'){if(ptrs.size===1){const id=pickItem(e.clientX,e.clientY);if(id){const it=state.items.find(i=>i.id===id),p=hitFloor(e.clientX,e.clientY);if(selId!==id){selId=id;rebuild()}drag={id,dx:it.x-p.x,dz:it.z-p.z}}else drag=null}
+ if(mode==='top'){if(ptrs.size===1){const id=pickItem(e.clientX,e.clientY);if(id){const it=state.items.find(i=>i.id===id);ground.constant=-floorAt(it.x,it.z);const p=hitFloor(e.clientX,e.clientY);if(selId!==id){selId=id;rebuild()}drag={id,dx:it.x-p.x,dz:it.z-p.z}}else drag=null}
   if(ptrs.size===2){drag=null;const[a,b]=[...ptrs.values()];pinch=Math.hypot(a.x-b.x,a.y-b.y)}}
  else{if(e.pointerType==='touch'&&e.clientX<innerWidth/2)joy={id:e.pointerId,x:e.clientX,y:e.clientY,dx:0,dy:0};else look={id:e.pointerId}}
  cv.style.cursor='grabbing'});
 cv.addEventListener('pointermove',e=>{const prev=ptrs.get(e.pointerId);if(!prev)return;const dx=e.clientX-prev.x,dy=e.clientY-prev.y;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
  if(mode==='top'){
   if(ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y);orb.r=Math.min(22,Math.max(3,orb.r*pinch/d));pinch=d;return}
-  if(drag){const p=hitFloor(e.clientX,e.clientY);if(!p)return;const it=state.items.find(i=>i.id===drag.id);it.x=Math.round((p.x+drag.dx)*20)/20;it.z=Math.round((p.z+drag.dz)*20)/20;const g=furn.children.find(c=>c.userData.id===it.id);g.position.set(it.x,0,it.z);renderer.shadowMap.needsUpdate=true;hud.textContent=`${it.name}: x ${Math.round((it.x-footprint(it)[0]/2)*100)} cm od lewej ściany, ${Math.round((it.z-footprint(it)[1]/2)*100)} cm od ściany wejściowej`}
+  if(drag){const p=hitFloor(e.clientX,e.clientY);if(!p)return;const it=state.items.find(i=>i.id===drag.id);it.x=Math.round((p.x+drag.dx)*20)/20;it.z=Math.round((p.z+drag.dz)*20)/20;const g=furn.children.find(c=>c.userData.id===it.id);g.position.set(it.x,floorAt(it.x,it.z),it.z);renderer.shadowMap.needsUpdate=true;hud.textContent=`${it.name}: x ${Math.round((it.x-footprint(it)[0]/2)*100)} cm od lewej ściany, ${Math.round((it.z-footprint(it)[1]/2)*100)} cm od ściany wejściowej`}
   else{orb.th-=dx*.006;orb.ph=Math.min(1.45,Math.max(.08,orb.ph-dy*.006))}}
  else{if(joy&&joy.id===e.pointerId){joy.dx=e.clientX-joy.x;joy.dy=e.clientY-joy.y}
   else if(look&&look.id===e.pointerId){yaw-=dx*.005;pitch=Math.min(1.2,Math.max(-1.2,pitch-dy*.005))}}});
@@ -1008,13 +1017,14 @@ function tick(t){const dt=Math.min(.05,(t-last)/1000);last=t;
   if(joy){f-=Math.max(-1,Math.min(1,joy.dy/60));s+=Math.max(-1,Math.min(1,joy.dx/60))}
   const sp=1.6*dt,fx=-Math.sin(yaw),fz=-Math.cos(yaw),nx=pos.x+(fx*f-fz*s)*sp,nz=pos.z+(fz*f+fx*s)*sp;
   if(!blocked(nx,pos.z))pos.x=nx;if(!blocked(pos.x,nz))pos.z=nz;
+  const fy=EYE+floorAt(pos.x,pos.z);pos.y+=(fy-pos.y)*Math.min(1,dt*9); // płynnie po stopniach
   cam.fov=72;cam.position.copy(pos);cam.rotation.set(pitch,yaw,0,'YXZ')}
  else{cam.fov=45;cam.position.set(orb.t.x+orb.r*Math.sin(orb.ph)*Math.sin(orb.th),orb.r*Math.cos(orb.ph),orb.t.z+orb.r*Math.sin(orb.ph)*Math.cos(orb.th));cam.lookAt(orb.t)}
  cam.updateProjectionMatrix();renderer.render(scene,cam);requestAnimationFrame(tick)}
 markBath();setMode('walk');rebuild();requestAnimationFrame(tick);
 {let s0=null;try{s0=new URLSearchParams(location.search).get('styl')||localStorage.getItem(SKEY)}catch(e){}if(s0==='real')setStyle('real')}
 // do zrzutów ekranu / testów
-window.A3={setStyle,setMode,setTod:t=>{tod=t;applyTod()},view:(x,z,y,p)=>{pos.set(x,EYE,z);yaw=y;pitch=p||0}};
+window.A3={setStyle,setMode,setTod:t=>{tod=t;applyTod()},view:(x,z,y,p)=>{pos.set(x,EYE+floorAt(x,z),z);yaw=y;pitch=p||0}};
 }
 </script>
 </body>

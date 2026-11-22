@@ -37,7 +37,8 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 | Drzwi wejściowe | 0,75–1,65 | ściana z<0 | wys. 2,05 |
 | Drzwi tarasowe | 1,72–3,42 | ściana z=6,70–6,95 | 1,70 m, wys. 2,25 |
 | Pokój dzienny z aneksem | 0–4,25 | 2,07–6,70 | 19,32 m² |
-| Ogródek | −0,15–4,40 | 6,95–12,20 | 23,49 m², ogrodzenie ~50 cm |
+| Ogródek | −0,15–4,40 | 6,95–12,20 | 23,49 m², ogrodzenie ~50 cm, teren 51 cm niżej niż podłoga (`GY`) |
+| Stopnie do ogródka | 1,72–3,42 | 6,95–7,90 | 3 stopnie po 17 cm (przyjęte, do zmierzenia): górny 35 cm na poziomie podłogi, dwa po 30 cm; tablica `STEPS` |
 Ściany zewnętrzne 25 cm, działowe 12 cm.
 
 ## Struktura kodu
@@ -100,6 +101,9 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Linie podziału frontów z pola `mods` (szerokości modułów w m), pozycja zlewu z `sink:[x0,x1]`.
 - Przedpokój „Nasz plan”: szafa do sufitu (z 0,62–2,04) + obudowa GK przewodu kominowego w narożniku przy wejściu
   (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
+
+- Poziom ogródka (22.11.2026): mieszkanie jest wyżej, z drzwi tarasowych prowadzą 3 stopnie. Stałe `RISE`, `GY`, `STEPS`; `floorAt(x,z)` daje wysokość podłoża
+  (0 / stopień / `GY`) – meble w ogródku stawiane są na niej w obu builderach, spacer podnosi/obniża oczy płynnie. Taras z płyt (stolik) u dołu stopni, z 7,90–9,00.
 
 - Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): wąska 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (x 3,50–4,35, z 7,00–9,40).
   Pierwsza wersja (160×200 po prawej, id `sz*`) odrzucona – przy wczytaniu usuwana z zapisanego stanu; obecne meble mają id `sw*`.
