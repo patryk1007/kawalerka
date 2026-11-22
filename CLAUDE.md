@@ -1,0 +1,72 @@
+# Kawalerka A3 · Milczańska 18 (Poznań) – model 3D do spaceru
+
+Jednoplikowa strona (`index.html`) z modelem 3D mieszkania kupionego w stanie deweloperskim.
+Służy właścicielom (bez doświadczenia w 3D) do sprawdzania układu, mebli i wariantów łazienki
+na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po polsku.
+
+## Zasady pracy
+- Wszystko zostaje w JEDNYM pliku `index.html` (HTML + CSS + JS). Bez bundlera, bez npm.
+- three.js **r128** z CDN: `https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js`
+  (API r128: `outputEncoding`, `BoxGeometry` itd. Nie podbijaj wersji bez potrzeby).
+- Uruchomienie: otwórz `index.html` w przeglądarce (albo `npx serve .`).
+- Po każdej zmianie zrób zrzut: `python3 tools/screenshot.py` (wymaga `pip install playwright && playwright install chromium`),
+  potem obejrzyj `shots/*.png`.
+- Wymiary podawaj w metrach w kodzie, w cm w UI. Nie zmieniaj geometrii ścian bez prośby użytkownika.
+- Nie twierdź, że ścianę można usunąć. Model nie weryfikuje konstrukcji. Ściany zewnętrzne,
+  międzylokalowe, słupek i szacht traktuj jako stałe, nie do ruszania. Karta dewelopera ma
+  legendę ścian rozbieralnych/nierozbieralnych, ale każda zmiana ścian wymaga weryfikacji przez fachowca.
+
+## Układ współrzędnych
+- Początek (0,0) = wewnętrzny narożnik: ściana wejściowa (korytarz klatki) × lewa ściana.
+- **x** → w prawo (0 … 4,25 m), **z** → w głąb, w stronę ogródka (0 … 6,70 m), **y** → w górę.
+- Patrząc od wejścia w stronę ogródka: x=0 (szafa, stół, sofa) jest po PRAWEJ ręce – to poprawne, nie lustro.
+- Rzut referencyjny: `reference/rzut_deweloper_A3.png` (wejście u góry, ogródek u dołu, ta sama orientacja co x/z).
+
+## Wymiary (z karty lokalu dewelopera, ±5 cm)
+| Element | x [m] | z [m] | uwagi |
+|---|---|---|---|
+| Wnętrze całe | 0–4,25 | 0–6,70 | wysokość H=2,65 **przyjęta, do zmierzenia** |
+| Przedpokój | 0–1,88 | 0–2,07 | 3,72 m², otwarty na pokój |
+| Łazienka | 2,00–4,25 | 0–1,95 | 4,28 m² |
+| Ścianka przedpokój/łazienka | 1,88–2,00 | 0–2,07 | 12 cm, drzwi łazienki z=0,35–1,15 (80 cm), nadproże 2,05 |
+| Ściana łazienka/pokój | 2,00–4,25 | 1,95–2,07 | 12 cm |
+| Szacht instalacyjny | 3,65–4,25 | 2,07–2,76 | pełna wysokość, nie ruszać |
+| Słupek przy wejściu | 0–0,32 | 0–0,30 | |
+| Drzwi wejściowe | 0,75–1,65 | ściana z<0 | wys. 2,05 |
+| Drzwi tarasowe | 1,72–3,42 | ściana z=6,70–6,95 | 1,70 m, wys. 2,25 |
+| Pokój dzienny z aneksem | 0–4,25 | 2,07–6,70 | 19,32 m² |
+| Ogródek | −0,15–4,40 | 6,95–12,20 | 23,49 m², ogrodzenie ~50 cm |
+Ściany zewnętrzne 25 cm, działowe 12 cm.
+
+## Struktura kodu
+- `W(x0,x1,z0,z1,y0,y1)`: ściana. Pełne (y0=0) trafiają do `wallsG` + kolizje `solids`, nadproża do `lintG`.
+  W widoku z góry `wallsG.scale.y=0.42`, `lintG` ukryte, sufit ukryty.
+- `DEFAULT` – lista mebli tworzona helperem `R(id,nazwa,kind,x0,x1,z0,z1,h,kolor,wariant)`.
+  Obiekt mebla: `{id,name,kind,x,z (środek),w (wzdłuż x),d (wzdłuż z),h,rot (stopnie),color,v,hidden}`.
+- `v`: `'all'` | `'dev'` | `'nasz'`. Przełącznik „Łazienka” ustawia `state.bath` i pokazuje odpowiedni wariant.
+- `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
+  bath, wc, washer, shower, rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
+- `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
+- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v2`; stary v1 migruje się z zachowaniem pozycji). Po zmianie `DEFAULT` użyj „Reset”
+  albo podbij wersję klucza.
+- Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
+  Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
+- „Kopiuj układ” daje JSON z pozycjami w cm, do wklejenia w rozmowie.
+
+## Kontekst decyzji (stan na 22.11.2026)
+- Etap 3/14: koncepcja układu. Odbiór techniczny od dewelopera do 31.12.2026.
+- Łazienka „Nasz plan” (z inwentaryzacji wod-kan, 02.11.2026):
+  umywalka z szafką w narożniku przy ścianie wejściowej i prawej (x 3,80–4,25, z 0,05–0,70);
+  prysznic narożny 80×80 przy pionie (x 3,45–4,25, z 1,15–1,95);
+  WC podwieszane na stelażu przy ścianie od pokoju (zabudowa x 2,62–3,45, z 1,73–1,95);
+  szafa z pralką w narożniku przy drzwiach (x 2,00–2,62, z 1,30–1,95).
+  Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
+- Kuchnia = układ dewelopera (L: lodówka + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
+  Do ewentualnej zmiany przez użytkownika.
+
+## Pomysły na dalsze kroki
+- Warianty kuchni (przełącznik jak dla łazienki), łóżko vs sofa rozkładana.
+- Etykiety wymiarów i odległości między meblami w widoku z góry (np. przejście ≥ 90 cm).
+- Punkty elektryczne/wod-kan jako znaczniki na ścianach.
+- Tekstury (płytki, panele), kolory ścian do wyboru.
+- Eksport/import układu (wklejenie JSON-a).
