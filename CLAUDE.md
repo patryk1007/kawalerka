@@ -12,7 +12,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   `examples/js/lights/RectAreaLightUniformsLib.js` (światło z drzwi tarasowych). Bez nich działa w uproszczeniu.
 - Uruchomienie: otwórz `index.html` w przeglądarce (albo `npx serve .`).
 - Po każdej zmianie zrób zrzut: `python3 tools/screenshot.py` (wymaga `pip install playwright && playwright install chromium`),
-  potem obejrzyj `shots/*.png`. `python3 tools/screenshot.py real` robi tylko kadry trybu realistycznego (`shots/real_*.png`, ok. 1 min).
+  potem obejrzyj `shots/*.png` (m.in. `szopka.png`, `real_szopka*.png`). `python3 tools/screenshot.py real` robi tylko kadry trybu realistycznego (`shots/real_*.png`, ok. 1 min).
 - Wymiary podawaj w metrach w kodzie, w cm w UI. Nie zmieniaj geometrii ścian bez prośby użytkownika.
 - Nie twierdź, że ścianę można usunąć. Model nie weryfikuje konstrukcji. Ściany zewnętrzne,
   międzylokalowe, słupek i szacht traktuj jako stałe, nie do ruszania. Karta dewelopera ma
@@ -48,7 +48,8 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - `v`: `'all'` | `'dev'` | `'nasz'`. Przełącznik „Wariant łazienki i kuchni” ustawia `state.bath` i pokazuje odpowiedni wariant.
 - Pola opcjonalne mebla: `y` (wys. dolnej krawędzi: szafki wiszące, lustro, drabinka), `mods` (linie podziału frontów), `hob:2` (płyta 2-palnikowa), `fr` (wariant lodówki), `sink`, `face:'+x'` (front szafy od +x).
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
-  bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
+  bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan),
+  shed (szopka, `buildShed` wspólny dla obu trybów), tires (stos kół), bench (blat warsztatowy), rack (półki/regał: `levels` = wys. półek, `posts`), tools (narzędzia na listwie). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
 - Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v10`; v1–v9 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
@@ -96,6 +97,14 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Linie podziału frontów z pola `mods` (szerokości modułów w m), pozycja zlewu z `sink:[x0,x1]`.
 - Przedpokój „Nasz plan”: szafa do sufitu (z 0,62–2,04) + obudowa GK przewodu kominowego w narożniku przy wejściu
   (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
+
+- Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): 160×200 przy płocie sąsiada i elewacji, po prawej po wyjściu na taras (x −0,10–1,50, z 7,00–9,00).
+  Dach jednospadowy 2,20 przy płocie → 1,95 od tarasu (pole `fall`), okap 4 cm od płotu / 15 cm od tarasu, rynna + rura do beczki na deszczówkę.
+  Drzwi 80×185 w ścianie od tarasu (z 7,70–8,50, pole `door` od krawędzi z0), otwierane na zewnątrz w stronę ogrodu; okienko nad blatem (`win`). Podłoga na podeście 10 cm.
+  Wnętrze: koła 4× 225/40 R18 w stosie (x 0,79–1,44, z 7,06–7,71, wys. 90) pod blatem warsztatowym 1,06 od gruntu (96 od podłogi szopki), tablica narzędziowa, 2 półki 30 cm (1,55 i 1,85);
+  naprzeciw regał 94×40 (5 półek) i narzędzia ogrodowe na listwie. Przejście między blatem a regałem ok. 83 cm. Kolizje szopki = tylko ściany (`shedRects`), można wejść w spacerze.
+  Z góry: ściany ×0,42, bez dachu (`setMode` przebudowuje meble w obu trybach). Stolik z krzesłami na tarasie (tryb realistyczny) przesunięty na x 2,75.
+  Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy, prąd do warsztatu.
 
 ## Pomysły na dalsze kroki
 - Łóżko vs sofa rozkładana.

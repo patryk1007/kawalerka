@@ -1,7 +1,7 @@
 """Zrzuty ekranu modelu do sprawdzenia zmian.
 Użycie: pip install playwright && playwright install chromium
         python3 tools/screenshot.py
-Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_slupek.png, shots/z_gory_rtv_bez_gornych.png, shots/z_gory_deweloper.png
+Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_slupek.png, shots/z_gory_rtv_bez_gornych.png, shots/z_gory_deweloper.png, shots/szopka.png
        oraz tryb realistyczny: shots/real_*.png (python3 tools/screenshot.py real – tylko te)
 """
 import asyncio, pathlib, sys
@@ -35,7 +35,8 @@ async def real(pg):
     await pg.wait_for_timeout(1500)
     views = [("real_wejscie", 1.25, .8, 3.1416, -.05), ("real_pokoj", 2.7, 6.3, .25, -.08),
              ("real_kuchnia", 1.4, 4.9, -0.75, -.12), ("real_lazienka", 2.2, .5, -2.45, -.2),
-             ("real_lustro", 3.3, 1.35, 0.15, -.1), ("real_ogrod", 2.4, 10.5, 0, .02)]
+             ("real_lustro", 3.3, 1.35, 0.15, -.1), ("real_ogrod", 2.4, 10.5, 0, .02),
+             ("real_szopka", 2.7, 10.2, .76, -.1), ("real_szopka_blat", 1.2, 8.15, .29, -.3), ("real_szopka_regal", 1.2, 7.95, 2.85, -.25)]
     for name, x, z, yaw, pitch in views:
         await pg.evaluate(f"A3.view({x},{z},{yaw},{pitch})")
         await pg.wait_for_timeout(900)
@@ -62,6 +63,10 @@ async def real(pg):
 
 async def mock(pg):
     await pg.screenshot(path=OUT / "spacer.png")
+    await pg.evaluate("A3.view(2.7,10.2,.76,-.1)")
+    await pg.wait_for_timeout(500)
+    await pg.screenshot(path=OUT / "szopka.png")
+    await pg.evaluate("A3.view(1.25,.8,3.1416,-.05)")
     await pg.click("#mode button[data-m=top]")
     await pg.wait_for_timeout(800)
     await pg.screenshot(path=OUT / "z_gory.png")
