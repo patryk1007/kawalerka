@@ -104,6 +104,9 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Bez wchodzenia do środka: front od strony ogródka z dwoma drzwiami dwuskrzydłowymi (pole `doors` [[z0,z1,'double'|'z0'|'z1']] lokalnie od z0, czyli przy rot 180 od końca od ogrodu):
   przy budynku (z 7,10–8,14) narzędzia na listwie na ścianie od budynku + półka 1,75 + regał 70×60 z 5 półkami;
   od ogrodu (z 8,20–9,32) blat warsztatowy 118×73 na 1,06 (96 cm nad podłogą szopki) z tablicą narzędziową i 2 półkami przy płocie (1,55 i 1,85), pod blatem koła 4× 225/40 R18 w stosie (z 8,67–9,32) i skrzynka.
+  Dwa warianty, lista „Ogródek: szopka” (tablica `SHEDS`, pole mebla `shed`, `state.shed`, domyślnie `srodek`):
+  `boki` (A, meble `sw*`) = opis wyżej; `srodek` (B, meble `sm*`) = wejście na środku, drzwi przesuwne 80 cm (z 7,80–8,60, `doors` typ 'slide': skrzydło na szynie na zewnątrz, odsunięte w stronę ogrodu),
+  przejście 80×73; od ogrodu blat 73×72 nad kołami (front do przejścia) + 2 półki na ścianie od ogrodu; od budynku regał 73×35 na ścianie od budynku + narzędzia na ścianie przy płocie + półka nad wejściem.
   Wnętrze 73 cm szerokości (koło Ø64). Podłoga na podeście 10 cm. Kolizje szopki = ściany (`shedRects`). Z góry: ściany ×0,42, bez dachu.
   Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy (2,20 m przy płocie), prąd do warsztatu.
 
