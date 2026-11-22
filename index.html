@@ -237,11 +237,12 @@ R('smPolka','Półki nad blatem (2×, gł. 30)','rack',3.56,4.29,9.04,9.34,.37,C
 R('smRegal','Regał 73×35 na ścianie od budynku','rack',3.56,4.29,7.06,7.41,1.80,COL.wood);RX({levels:[.16,.55,.95,1.35,1.75],posts:true,face:'+z',shed:'srodek'});
 R('smNarz','Narzędzia ogrodowe na ścianie przy płocie','tools',3.99,4.29,7.44,7.80,1.65,0x7a5a3a);RX({face:'-x',shed:'srodek'});
 R('smPolkaS','Półka nad wejściem przy płocie (gł. 25)','rack',4.04,4.29,7.80,8.60,.2,COL.wood);RX({y:1.7,levels:[1.75],face:'-x',shed:'srodek'});
-// ogródek: warzywnik (propozycja 22.11.2026, v:'all') – skrzynie podwyższone w L przy płocie po prawej (x=0) i tylnym, środek wolny (ok. 2,8×3,2 m trawy)
-// skrzynie 80 cm szer. (dostęp z jednej strony), 75 cm wys.; pole crop: 'pom' (pomidory na tyczkach) | 'pap' (papryki)
-R('gPom','Skrzynia podwyższona 240×80 – pomidory','raised',-.10,2.30,11.35,12.15,.75,0x8a6a4a);RX({crop:'pom'});
-R('gPap','Skrzynia podwyższona 200×80 – papryki','raised',-.10,.70,9.35,11.35,.75,0x8a6a4a);RX({crop:'pap'});
-R('gTrusk','Wieża truskawkowa Ø60, 4 poziomy','strawtower',.15,.75,8.45,9.05,1.10,0xb4643e);
+// ogródek: warzywnik (układ właścicieli 22.11.2026, v:'all') – skrzynie podwyższone 80 cm szer., 75 cm wys.: pomidory przy tylnym płocie,
+// papryki przy lewym płocie (x≈4,25, za szopką), mała 80×80 w tylnym narożniku przy x=0; pole crop: 'pom' (pomidory na tyczkach) | 'pap' (papryki)
+R('gPom','Skrzynia podwyższona 240×80 – pomidory','raised',1.00,3.40,11.35,12.15,.75,0x8a6a4a);RX({crop:'pom'});
+R('gPap','Skrzynia podwyższona 200×80 – papryki','raised',3.45,4.25,10.15,12.15,.75,0x8a6a4a);RX({crop:'pap'});
+R('gMala','Skrzynia podwyższona 80×80 – mała','raised',-.10,.70,11.35,12.15,.75,0x8a6a4a);RX({crop:'pap'});
+R('gTrusk','Wieża truskawkowa Ø60, 4 poziomy','strawtower',3.35,3.95,9.55,10.15,1.10,0xb4643e);
 // wersje kuchni „Nasz plan” – osobno dla każdej ściany (listy rozwijane).
 // Nowa wersja = nowy wpis + meble z polem fr:'<id>' (ściana z lodówką) albo rtv:'<id>' (ściana od RTV)
 const FRIDGE_WALL=[
@@ -868,11 +869,10 @@ function makeReal(){
   for(let i=0;i<5;i++)mesh(foliage((.55+r()*.35)*s,seed+i),MAT.leaves,x+(r()-.5)*.9*s,GY+(2.1+r()*1.1)*s,z+(r()-.5)*.9*s,base)};
  const tr=rngOf('las');
  for(let i=0;i<34;i++){const a=tr()*Math.PI*1.25-Math.PI*.12,d=13+tr()*22,x=2.1+Math.cos(a)*d,z=7+Math.sin(a)*d;if(z<7.5)continue;tree(x,z,1.3+tr()*1.4,'f'+i)}
- // stolik i dwa krzesła na tarasie (u dołu stopni)
- const tz=8.5;mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.3,GY+.72,tz,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.3,GY+.36,tz,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.3,GY+.01,tz,base);
- [[1.82,tz,Math.PI/2],[2.78,tz,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,GY,z);c.rotation.y=ry;base.add(c);
+ // stolik i dwa krzesła u dołu stopni, po stronie przeciwnej do szopki (przy płocie x=0; 22.11.2026)
+ const tx=.75,tz=8.5;mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,tx,GY+.72,tz,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,tx,GY+.36,tz,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,tx,GY+.01,tz,base);
+ [[tx-.48,tz,Math.PI/2],[tx+.48,tz,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,GY,z);c.rotation.y=ry;base.add(c);
   mesh(boxUV(RB(.42,.03,.42,.008,1)),MAT.fence,0,.45,0,c);mesh(boxUV(RB(.42,.4,.03,.008,1)),MAT.fence,0,.68,-.2,c);[[-.19,-.19],[.19,-.19],[-.19,.19],[.19,.19]].forEach(([a,b])=>mesh(new THREE.CylinderGeometry(.012,.012,.45,8),MAT.fence,a,.225,b,c))});
- plantInto(base,1.35,GY,7.25,.7,rngOf('pot1'),.4);
  // elewacja budynku (3 kondygnacje) z oknami sąsiadów
  const fz=6.95;wbox(-9,1.72,GY-.02,9.4,fz,fz+.04,MAT.plaster,upper);wbox(3.42,13,GY-.02,9.4,fz,fz+.04,MAT.plaster,upper);
  wbox(-.25,4.5,GY-.05,-.005,6.7,6.95,MAT.plaster2,base); // cokół pod podłogą mieszkania (widoczny też z góry)wbox(1.72,3.42,GDOOR,9.4,fz,fz+.04,MAT.plaster,upper);

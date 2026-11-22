@@ -103,7 +103,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
 
 - Poziom ogródka (22.11.2026): mieszkanie jest wyżej, z drzwi tarasowych prowadzą 3 stopnie. Stałe `RISE`, `GY`, `STEPS`; `floorAt(x,z)` daje wysokość podłoża
-  (0 / stopień / `GY`) – meble w ogródku stawiane są na niej w obu builderach, spacer podnosi/obniża oczy płynnie. Taras z płyt (stolik) u dołu stopni, z 7,90–9,00.
+  (0 / stopień / `GY`) – meble w ogródku stawiane są na niej w obu builderach, spacer podnosi/obniża oczy płynnie. Stolik z 2 krzesłami (dekoracja trybu realistycznego) u dołu stopni po stronie przeciwnej do szopki, przy płocie x=0 (środek x 0,75, z 8,50).
 
 - Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): wąska 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (x 3,50–4,35, z 7,00–9,40).
   Pierwsza wersja (160×200 po prawej, id `sz*`) odrzucona – przy wczytaniu usuwana z zapisanego stanu; obecne meble mają id `sw*`.
@@ -117,9 +117,9 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Wnętrze 73 cm szerokości (koło Ø64). Podłoga na podeście 10 cm. Kolizje szopki = ściany (`shedRects`). Z góry: ściany ×0,42, bez dachu.
   Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy (2,20 m przy płocie), prąd do warsztatu.
 
-- Ogródek „warzywnik” (22.11.2026, propozycja, v:'all'): skrzynie podwyższone 80 cm szer., 75 cm wys. w L przy płocie po prawej (x≈0) i tylnym,
-  środek wolny (trawa ok. 2,8×3,2 m): `gPom` pomidory 240×80 (x −0,10–2,30, z 11,35–12,15), `gPap` papryki 200×80 (x −0,10–0,70, z 9,35–11,35),
-  `gTrusk` wieża truskawkowa Ø60, wys. 110 (x 0,15–0,75, z 8,45–9,05) blisko tarasu. Lewy tylny narożnik wolny (drzewo usunięte 22.11.2026).
+- Ogródek „warzywnik” (22.11.2026, układ właścicieli, v:'all'): skrzynie podwyższone 80 cm szer., 75 cm wys.:
+  `gPom` pomidory 240×80 przy tylnym płocie (x 1,00–3,40, z 11,35–12,15), `gPap` papryki 200×80 przy lewym płocie za szopką (x 3,45–4,25, z 10,15–12,15),
+  `gMala` mała 80×80 w tylnym narożniku przy x=0 (x −0,10–0,70, z 11,35–12,15), `gTrusk` wieża truskawkowa Ø60, wys. 110 (x 3,35–3,95, z 9,55–10,15) między szopką a papryką.
 
 ## Pomysły na dalsze kroki
 - Łóżko vs sofa rozkładana.
