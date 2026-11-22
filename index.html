@@ -176,23 +176,13 @@ const UPX=(id,z0,z1,mods,o,top=true)=>{if(top){R(id+'g','Szafki wiszące górne 
  if(top)R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',3.85,4.25,z0,z1,.6,COL.oak,'nasz');
  else R(id+'d','Szafki wiszące do sufitu (100 wys., 40 gł.)','upper',3.85,4.25,z0,z1,H-UY,COL.oak,'nasz'); // jedna głębokość 40 od 1,55 do sufitu
  RX(Object.assign({y:UY,mods},o))};
-// a) lodówka podblatowa: jeden ciąg blatu pod łazienką
-R('nBlatP','Blat: lodówka podblatowa + zmywarka + zlew','sinkc',1.9,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'pod',mods:[.6,.6,.55],sink:[1.25,1.7]});
-UPZ('nGP',1.9,3.65,[.6,.6,.55],{fr:'pod'});
-// b) lodówka wolnostojąca 60×145
-R('nLod','Lodówka wolnostojąca 60×145','fridge',1.9,2.5,2.07,2.69,1.45,COL.white,'nasz');RX({fr:'wolna'});
-R('nBlat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'wolna',mods:[.6,.53]});
-UPZ('nGW',1.9,3.65,[.62,.6,.53],{fr:'wolna'});
-// c) słupek od wejścia: lodówka do zabudowy (wnęka 140) + szafka do sufitu; podział frontów na wys. UY = linia dołu szafek wiszących
+// ściana z lodówką (decyzja 22.11.2026: słupek; wersje podblatowa i wolnostojąca usunięte): słupek od wejścia: lodówka do zabudowy (wnęka 140) + szafka do sufitu; podział frontów na wys. UY = linia dołu szafek wiszących
 R('nSlup','Słupek: lodówka do zabudowy 140 + szafka','slupek',1.9,2.5,2.07,2.67,H,COL.oak,'nasz');RX({fr:'slupek',split:[.1,UY,UT]}); // podziały w liniach szafek wiszących
 R('nBlatS','Blat: zmywarka + zlew','sinkc',2.5,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'slupek',mods:[.6,.55],sink:[.65,1.1]});
 UPZ('nGS',2.5,3.65,[.6,.55],{fr:'slupek'});
-// ściana od RTV: dolne 3 moduły po 40 cm z płytą 2-palnikową (wspólne), wiszące wg wersji
+// ściana od RTV: dolne 3 moduły po 40 cm z płytą 2-palnikową, wiszące 2×60 bez górnych (decyzja 22.11.2026)
 R('nBlat2','Blat z płytą 2-palnikową (3×40)','cook',3.65,4.25,2.76,3.96,.9,COL.oak,'nasz');RX({hob:2,mods:[.4,.4,.4]});
-UPX('nR60',2.76,3.96,[.6,.6],{rtv:'w2x60'});
-UPX('nR40',2.76,3.96,[.4,.4,.4],{rtv:'w3x40'});
 UPX('nR60b',2.76,3.96,[.6,.6],{rtv:'w2x60b'},false); // bez górnych 40×60 – szafki 40 gł. od 1,55 do sufitu
-UPX('nR40b',2.76,3.96,[.4,.4,.4],{rtv:'w3x40b'},false);
 // pokój
 R('stol','Stół','table',0,.8,2.83,3.63,.75,COL.wood);
 R('kr1','Krzesło','chair',.19,.59,2.35,2.79,.85,COL.dark);
@@ -238,14 +228,9 @@ R('smPolkaS','Półka nad wejściem przy płocie (gł. 25)','rack',4.04,4.29,7.8
 // wersje kuchni „Nasz plan” – osobno dla każdej ściany (listy rozwijane).
 // Nowa wersja = nowy wpis + meble z polem fr:'<id>' (ściana z lodówką) albo rtv:'<id>' (ściana od RTV)
 const FRIDGE_WALL=[
- {id:'pod',name:'A · Lodówka podblatowa',desc:'Wolny blat ok. 210 cm. Lodówka do zabudowy pod blat, 120–140 l, zamrażalnik ok. 15 l.'},
- {id:'wolna',name:'B · Wolnostojąca 60×145',desc:'Wolny blat ok. 150 cm. Ok. 200 l. Biała bryła przerywa linię frontów.'},
- {id:'slupek',name:'C · Słupek z lodówką 140',desc:'Wolny blat ok. 150 cm. Lodówka do zabudowy (wnęka 140), ok. 200 l; podział frontów na 155 cm = linia szafek wiszących.'}];
+ {id:'slupek',name:'Słupek z lodówką 140',desc:'Wolny blat ok. 150 cm. Lodówka do zabudowy (wnęka 140), ok. 200 l; podział frontów na 155 cm = linia szafek wiszących.'}];
 const RTV_WALL=[
- {id:'w2x60',name:'Wiszące 2×60',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 2 moduły po 60 cm (górne 40×60 gł., dolne 60×40 gł.).'},
- {id:'w3x40',name:'Wiszące 3×40',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 3 moduły po 40 cm, fronty w osi z dolnymi szafkami.'},
- {id:'w2x60b',name:'Wiszące 2×60, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące jednej głębokości 40 cm, od 1,55 m do sufitu (100 wys.), bez górnych 60 gł.'},
- {id:'w3x40b',name:'Wiszące 3×40, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące jednej głębokości 40 cm, od 1,55 m do sufitu (100 wys.), 3 moduły po 40 cm.'}];
+ {id:'w2x60b',name:'Wiszące 2×60, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące jednej głębokości 40 cm, od 1,55 m do sufitu (100 wys.), bez górnych 60 gł.'}];
 const SHEDS=[
  {id:'srodek',name:'B · Wejście na środku, drzwi przesuwne',desc:'Drzwi przesuwne 80 cm pośrodku, wchodzisz do środka (przejście 80×73). Po prawej koła pod blatem 73×72 i półki, po lewej regał 35 cm i narzędzia przy płocie.'},
  {id:'boki',name:'A · Dwoje drzwi dwuskrzydłowych',desc:'Bez wchodzenia, wszystko od frontu. Przy budynku narzędzia + regał 70×60, od ogrodu blat 118×73 z kołami pod spodem.'}];
@@ -256,7 +241,7 @@ const shedSel=document.getElementById('shed');shedSel.innerHTML=SHEDS.map(k=>`<o
 const rtvSel=document.getElementById('rtv');rtvSel.innerHTML=RTV_WALL.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
 addSel.innerHTML+=CATALOG.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
 
-let state={bath:'nasz',fridge:'pod',rtv:'w2x60',shed:'srodek',items:JSON.parse(JSON.stringify(DEFAULT))};
+let state={bath:'nasz',fridge:'slupek',rtv:'w2x60b',shed:'srodek',items:JSON.parse(JSON.stringify(DEFAULT))};
 const KEY='a3-milczanska-uklad-v10';
 try{let s=JSON.parse(localStorage.getItem(KEY));
  if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v9'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v8'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v7'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
@@ -268,7 +253,8 @@ try{let s=JSON.parse(localStorage.getItem(KEY));
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
  if(s&&s.items)s.items=s.items.filter(it=>!/^sz(opa|Kola|Blat|Polka|Regal|Narz)$/.test(it.id)); // pierwsza wersja szopki (160×200 po prawej) – zastąpiona
  if(s&&s.items){DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
-  if(!FRIDGE_WALL.some(k=>k.id===s.fridge))s.fridge='pod';if(!RTV_WALL.some(k=>k.id===s.rtv))s.rtv='w2x60';if(!SHEDS.some(k=>k.id===s.shed))s.shed='srodek';
+  if(!FRIDGE_WALL.some(k=>k.id===s.fridge))s.fridge='slupek';if(!RTV_WALL.some(k=>k.id===s.rtv))s.rtv='w2x60b';if(!SHEDS.some(k=>k.id===s.shed))s.shed='srodek';
+  s.items=s.items.filter(it=>(!it.fr||FRIDGE_WALL.some(k=>k.id===it.fr))&&(!it.rtv||RTV_WALL.some(k=>k.id===it.rtv))); // usunięte wersje kuchni
   s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d&&d.shed)it.shed=d.shed});state=s}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
 
@@ -337,7 +323,7 @@ const edgeMat=new THREE.LineBasicMaterial({color:0x1c1916});
 const glassEdgeMat=new THREE.LineBasicMaterial({color:0x6d7f86});
 function addEdges(g){const ms=[];g.traverse(o=>{if(o.isMesh)ms.push(o)});ms.forEach(o=>{
  const l=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,30),o.material===mat.glass?glassEdgeMat:edgeMat);l.raycast=()=>{};o.add(l)})}
-const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath)&&(!it.fr||it.fr===(state.fridge||'pod'))&&(!it.rtv||it.rtv===(state.rtv||'w2x60'))&&(!it.shed||it.shed===(state.shed||'srodek'));
+const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath)&&(!it.fr||it.fr===(state.fridge||'slupek'))&&(!it.rtv||it.rtv===(state.rtv||'w2x60b'))&&(!it.shed||it.shed===(state.shed||'srodek'));
 function rebuild(){
  while(furn.children.length){const c=furn.children[0];furn.remove(c);c.traverse(o=>{if(o.geometry)o.geometry.dispose();if(typeof o.getRenderTarget==='function')o.getRenderTarget().dispose()})}
  const real=style==='real'&&REAL;
@@ -880,8 +866,8 @@ function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.querySelectorAll('#bath button').forEach(b=>b.onclick=()=>{state.bath=b.dataset.v;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()});
 function markBath(){document.querySelectorAll('#bath button').forEach(b=>b.classList.toggle('on',b.dataset.v===state.bath));
- frSel.value=state.fridge||'pod';const k=FRIDGE_WALL.find(k=>k.id===frSel.value);document.getElementById('frDesc').textContent=k?k.desc:'';
- rtvSel.value=state.rtv||'w2x60';const r=RTV_WALL.find(k=>k.id===rtvSel.value);document.getElementById('rtvDesc').textContent=r?r.desc:'';
+ frSel.value=state.fridge||'slupek';const k=FRIDGE_WALL.find(k=>k.id===frSel.value);frSel.hidden=FRIDGE_WALL.length<2;document.getElementById('frDesc').textContent=k?(frSel.hidden?k.name+'. ':'')+k.desc:'';
+ rtvSel.value=state.rtv||'w2x60b';const r=RTV_WALL.find(k=>k.id===rtvSel.value);rtvSel.hidden=RTV_WALL.length<2;document.getElementById('rtvDesc').textContent=r?(rtvSel.hidden?r.name+'. ':'')+r.desc:'';
  shedSel.value=state.shed||'srodek';const sd=SHEDS.find(k=>k.id===shedSel.value);document.getElementById('shedDesc').textContent=sd?sd.desc:'';
  document.getElementById('frBox').hidden=state.bath!=='nasz'}
 frSel.onchange=()=>{state.fridge=frSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
@@ -900,8 +886,8 @@ document.getElementById('sRot').onclick=()=>{const it=selItem();if(it){it.rot=(i
 document.getElementById('sDel').onclick=()=>{const it=selItem();if(it){it.hidden=true;selId=null;rebuild()}};
 addSel.onchange=()=>{const c=CATALOG[addSel.value];if(!c)return;const id='u'+Date.now();
  state.items.push({id,name:c[0],kind:c[1],w:c[2],d:c[3],h:c[4],color:c[5],x:2.1,z:4.4,rot:0,v:'all'});selId=id;addSel.value='';setMode('top');rebuild()};
-document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'pod',rtv:'w2x60',shed:'srodek',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
-document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?{sciana_lodowka:(FRIDGE_WALL.find(k=>k.id===(state.fridge||'pod'))||{}).name,sciana_rtv:(RTV_WALL.find(k=>k.id===(state.rtv||'w2x60'))||{}).name}:undefined,szopka:(SHEDS.find(k=>k.id===(state.shed||'srodek'))||{}).name,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
+document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'slupek',rtv:'w2x60b',shed:'srodek',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
+document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?{sciana_lodowka:(FRIDGE_WALL.find(k=>k.id===(state.fridge||'slupek'))||{}).name,sciana_rtv:(RTV_WALL.find(k=>k.id===(state.rtv||'w2x60b'))||{}).name}:undefined,szopka:(SHEDS.find(k=>k.id===(state.shed||'srodek'))||{}).name,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
  const box=document.getElementById('copybox');box.value=txt;
  navigator.clipboard.writeText(txt).then(()=>{hud.textContent='Układ skopiowany – wklej go w czacie'}).catch(()=>{box.style.display='block';box.select()})};
 

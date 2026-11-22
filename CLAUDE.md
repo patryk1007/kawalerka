@@ -86,12 +86,11 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   grzejnik drabinkowy 50×125 na ścianie z umywalką, 115 cm nad podłogą, 16 cm od prawej ściany (x 3,59–4,09; pole `y` = wys. dolnej krawędzi).
   Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
 - Kuchnia: przełącznik „Wariant łazienki i kuchni” przełącza też kuchnię. „Deweloper” = układ z karty (L: lodówka w zabudowie + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
-  „Nasz plan” (22.11.2026): dwie listy rozwijane, osobno dla każdej ściany:
-  „ściana z lodówką” (tablica `FRIDGE_WALL`, pole mebla `fr`, `state.fridge`) i „ściana od RTV” (tablica `RTV_WALL`, pole `rtv`, `state.rtv`: `w2x60` | `w3x40` | `w2x60b` | `w3x40b` – „b” = bez górnych 60 gł.: wiszące jednej głębokości 40 cm od 1,55 do sufitu; `UPX(...,top=false)`).
-  Nowa wersja = wpis {id,name,desc} w odpowiedniej tablicy + meble z `fr:'<id>'` / `rtv:'<id>'` (brakujące meble z `DEFAULT` dopisują się do zapisanego stanu przy wczytaniu).
-  `pod` = jeden blat pod łazienką x 1,90–3,65 (lodówka podblatowa 60 + zmywarka 60 + zlew 55), `wolna` = lodówka wolnostojąca 60×145 + blat zmywarka/zlew x 2,52–3,65,
-  `slupek` = słupek do sufitu x 1,90–2,50 (kind `slupek`, pole `split` = wysokości poziomych podziałów: cokół 10 cm, lodówka do zabudowy wnęka 140, podziały na 1,55 i 2,15 = linie szafek wiszących) + blat zmywarka/zlew x 2,50–3,65;
-  przy ścianie od RTV dolne 3×40 cm (z 2,76–3,96) z płytą 2-palnikową 30×52, wiszące nad nimi 2×60 albo 3×40 cm.
+  „Nasz plan” (decyzja 22.11.2026, pozostałe wersje usunięte): ściana z lodówką = `slupek`, ściana od RTV = `w2x60b`.
+  Mechanizm wersji zostaje: tablice `FRIDGE_WALL` (pole mebla `fr`, `state.fridge`) i `RTV_WALL` (pole `rtv`, `state.rtv`); przy jednej wersji lista jest ukryta, widać nazwę + opis.
+  Nowa wersja = wpis {id,name,desc} w tablicy + meble z `fr:'<id>'` / `rtv:'<id>'` (brakujące meble z `DEFAULT` dopisują się przy wczytaniu; meble wersji spoza tablic są usuwane z zapisanego stanu).
+  `slupek` = słupek do sufitu x 1,90–2,50 (kind `slupek`, pole `split` = wysokości poziomych podziałów: cokół 10 cm, lodówka do zabudowy wnęka 140, podziały na 1,55 i 2,15 = linie szafek wiszących) + blat zmywarka/zlew x 2,50–3,65, nad nim para szafek `UPZ`;
+  przy ścianie od RTV dolne 3×40 cm (z 2,76–3,96) z płytą 2-palnikową 30×52, nad nimi wiszące 2×60 jednej głębokości 40 cm od 1,55 do sufitu (`UPX(...,top=false)`, bez górnych 60 gł.).
   Szafki wiszące (obie ściany) = para mebli: górne 40 wys. × 60 gł. pod sufitem (dół `UT`=H−0,40) + dolne 60 wys. × 40 gł. bez przerwy (dół `UY`=H−1 = 1,55 m);
   helpery `UPZ` (ściana pod łazienką) i `UPX` (ściana od RTV).
   Linie podziału frontów z pola `mods` (szerokości modułów w m), pozycja zlewu z `sink:[x0,x1]`.

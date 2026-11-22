@@ -1,7 +1,7 @@
 """Zrzuty ekranu modelu do sprawdzenia zmian.
 Użycie: pip install playwright && playwright install chromium
         python3 tools/screenshot.py
-Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_slupek.png, shots/z_gory_rtv_bez_gornych.png, shots/z_gory_deweloper.png, shots/szopka.png
+Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_deweloper.png, shots/szopka.png
        oraz tryb realistyczny: shots/real_*.png (python3 tools/screenshot.py real – tylko te)
 """
 import asyncio, pathlib, sys
@@ -50,11 +50,6 @@ async def real(pg):
     await pg.wait_for_timeout(900)
     await pg.screenshot(path=OUT / "real_szopka_wariant_a.png")
     await pg.select_option("#shed", "srodek")
-    await pg.evaluate("A3.view(1.4,4.9,-0.75,-.12)")
-    await pg.select_option("#fridge", "slupek")
-    await pg.wait_for_timeout(900)
-    await pg.screenshot(path=OUT / "real_kuchnia_slupek.png")
-    await pg.select_option("#fridge", "pod")
     await pg.click("#bath button[data-v=dev]")
     await pg.evaluate("A3.view(2.2,.5,-2.45,-.2)")
     await pg.wait_for_timeout(900)
@@ -75,14 +70,6 @@ async def mock(pg):
     await pg.click("#mode button[data-m=top]")
     await pg.wait_for_timeout(800)
     await pg.screenshot(path=OUT / "z_gory.png")
-    await pg.select_option("#fridge", "slupek")
-    await pg.wait_for_timeout(800)
-    await pg.screenshot(path=OUT / "z_gory_slupek.png")
-    await pg.select_option("#fridge", "pod")
-    await pg.select_option("#rtv", "w2x60b")
-    await pg.wait_for_timeout(800)
-    await pg.screenshot(path=OUT / "z_gory_rtv_bez_gornych.png")
-    await pg.select_option("#rtv", "w2x60")
     await pg.click("#bath button[data-v=dev]")
     await pg.wait_for_timeout(800)
     await pg.screenshot(path=OUT / "z_gory_deweloper.png")
