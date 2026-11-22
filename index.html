@@ -40,6 +40,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 #toggle{display:none}
 #hud{position:fixed;right:14px;top:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--mut);pointer-events:none}
 #copybox{display:none;width:100%;height:90px;font:12px monospace;margin-top:8px}
+#pastetxt{width:100%;height:90px;font:12px monospace;margin-top:8px;box-sizing:border-box}
 @media(max-width:700px){
  #panel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:60%;border-radius:14px 14px 0 0;transform:translateY(calc(100% - 56px));transition:transform .25s}
  #panel.open{transform:none}
@@ -85,8 +86,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
   </div>
   <div class="row"><button class="b" id="sRot">Obróć 90°</button><button class="b" id="sDel">Usuń</button></div>
  </div>
- <div class="row" style="margin-top:12px"><button class="b" id="copy">Kopiuj układ</button><button class="b" id="reset">Reset</button></div>
+ <div class="row" style="margin-top:12px"><button class="b" id="copy">Kopiuj układ</button><button class="b" id="paste">Wklej układ</button><button class="b" id="reset">Reset</button></div>
+ <div class="row" style="margin-top:8px"><button class="b" id="dl">Pobierz plik układu</button><button class="b" id="ul">Wczytaj plik</button></div>
+ <input type="file" id="ulf" accept=".json,application/json" hidden>
  <textarea id="copybox" readonly aria-label="Układ do skopiowania"></textarea>
+ <div id="pasteBox" hidden><textarea id="pastetxt" placeholder="Wklej tu skopiowany układ (Ctrl+V / Cmd+V) i kliknij Zastosuj" aria-label="Układ do wklejenia"></textarea>
+  <div class="row" style="margin-top:6px"><button class="b" id="pasteOk">Zastosuj</button><button class="b" id="pasteNo">Anuluj</button></div></div>
  <p class="help" id="help"></p>
  <p class="note">Wymiary wg rzutu i karty lokalu dewelopera (±5 cm). Wysokość 2,55 m (podana przez właścicieli) – do potwierdzenia po odbiorze. Ścianki działowe i meble poglądowo; nie sprawdza konstrukcji.</p>
 </div>
@@ -206,7 +211,7 @@ R('nLu','Lustro 60×80','mirror',2.85,3.45,0,.02,.8,0xc9d6dc,'nasz');DEFAULT[DEF
 R('nDr','Grzejnik drabinkowy 50×125','ladder',3.59,4.09,0,.05,1.25,0xf4f4f2,'nasz');DEFAULT[DEFAULT.length-1].y=1.15; // 115 cm nad podłogą, 16 cm od prawej ściany
 // ogródek: wąska szopka 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (zmiana 22.11.2026; wcześniej 160×200 po prawej)
 // między ościeżnicą drzwi tarasowych (x 3,42) a płotem (x 4,40) jest ok. 95 cm. Bez wchodzenia do środka – wszystko dostępne od frontu przez dwie pary drzwi.
-// rot 180: lokalne −x (wysoka ściana, 2,20) = przy płocie, dach spada na nasz ogródek (front 2,00), rynna + beczka od strony ogrodu.
+// rot 180: lokalne −x (wysoka ściana, 2,20) = przy płocie, dach spada na nasz ogródek (front 2,00), rynna od strony ogrodu.
 // pole doors: [z0,z1,'double'] w układzie lokalnym od krawędzi z0 – przy rot 180 liczone od końca szopki od ogrodu (z 9,40)
 // podłoga szopki na podeście 10 cm (y=0,10); wnętrze x 3,56…4,29 (73 cm), z 7,06…9,34
 R('swSzopa','Szopka wąska 85×240','shed',3.50,4.35,7.00,9.40,2.20,0x6f7a72);RX({shed:'boki'});RX({rot:180,fall:.20,doorH:1.85,doors:[[.08,1.20,'double'],[1.26,2.30,'double']]});
@@ -225,6 +230,11 @@ R('smPolka','Półki nad blatem (2×, gł. 30)','rack',3.56,4.29,9.04,9.34,.37,C
 R('smRegal','Regał 73×35 na ścianie od budynku','rack',3.56,4.29,7.06,7.41,1.80,COL.wood);RX({levels:[.16,.55,.95,1.35,1.75],posts:true,face:'+z',shed:'srodek'});
 R('smNarz','Narzędzia ogrodowe na ścianie przy płocie','tools',3.99,4.29,7.44,7.80,1.65,0x7a5a3a);RX({face:'-x',shed:'srodek'});
 R('smPolkaS','Półka nad wejściem przy płocie (gł. 25)','rack',4.04,4.29,7.80,8.60,.2,COL.wood);RX({y:1.7,levels:[1.75],face:'-x',shed:'srodek'});
+// ogródek: warzywnik (propozycja 22.11.2026, v:'all') – skrzynie podwyższone w L przy płocie po prawej (x=0) i tylnym, środek wolny (ok. 2,8×3,2 m trawy)
+// skrzynie 80 cm szer. (dostęp z jednej strony), 75 cm wys.; pole crop: 'pom' (pomidory na tyczkach) | 'pap' (papryki)
+R('gPom','Skrzynia podwyższona 240×80 – pomidory','raised',-.10,2.30,11.35,12.15,.75,0x8a6a4a);RX({crop:'pom'});
+R('gPap','Skrzynia podwyższona 200×80 – papryki','raised',-.10,.70,9.35,11.35,.75,0x8a6a4a);RX({crop:'pap'});
+R('gTrusk','Wieża truskawkowa Ø60, 4 poziomy','strawtower',.15,.75,8.45,9.05,1.10,0xb4643e);
 // wersje kuchni „Nasz plan” – osobno dla każdej ściany (listy rozwijane).
 // Nowa wersja = nowy wpis + meble z polem fr:'<id>' (ściana z lodówką) albo rtv:'<id>' (ściana od RTV)
 const FRIDGE_WALL=[
@@ -234,7 +244,7 @@ const RTV_WALL=[
 const SHEDS=[
  {id:'srodek',name:'B · Wejście na środku, drzwi przesuwne',desc:'Drzwi przesuwne 80 cm pośrodku, wchodzisz do środka (przejście 80×73). Po prawej koła pod blatem 73×72 i półki, po lewej regał 35 cm i narzędzia przy płocie.'},
  {id:'boki',name:'A · Dwoje drzwi dwuskrzydłowych',desc:'Bez wchodzenia, wszystko od frontu. Przy budynku narzędzia + regał 70×60, od ogrodu blat 118×73 z kołami pod spodem.'}];
-const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×200','bed',1.4,2.1,.5,COL.blue],['Sofa rozkładana 200','sofa',2,.95,.85,COL.fabric],['Fotel','chair',.8,.8,.85,COL.fabric],['Biurko 120×60','table',1.2,.6,.75,COL.wood],['Stół 120×80','table',1.2,.8,.75,COL.wood],['Krzesło','chair',.44,.44,.85,COL.dark],['Szafa 100×60','wardrobe',1,.6,2.2,COL.oak],['Regał 80×35','wardrobe',.8,.35,1.9,COL.oak],['Komoda 120×45','tall',1.2,.45,.85,COL.oak],['Wyspa / barek 120×60','tall',1.2,.6,.95,COL.oak],['Dywan 160×230','rug',1.6,2.3,.01,0xc9c1b4],['Roślina','plant',.45,.45,1.3,0x4f7a43]];
+const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×200','bed',1.4,2.1,.5,COL.blue],['Sofa rozkładana 200','sofa',2,.95,.85,COL.fabric],['Fotel','chair',.8,.8,.85,COL.fabric],['Biurko 120×60','table',1.2,.6,.75,COL.wood],['Stół 120×80','table',1.2,.8,.75,COL.wood],['Krzesło','chair',.44,.44,.85,COL.dark],['Szafa 100×60','wardrobe',1,.6,2.2,COL.oak],['Regał 80×35','wardrobe',.8,.35,1.9,COL.oak],['Komoda 120×45','tall',1.2,.45,.85,COL.oak],['Wyspa / barek 120×60','tall',1.2,.6,.95,COL.oak],['Dywan 160×230','rug',1.6,2.3,.01,0xc9c1b4],['Roślina','plant',.45,.45,1.3,0x4f7a43],['Skrzynia warzywna 120×80','raised',1.2,.8,.75,0x8a6a4a],['Wieża truskawkowa Ø60','strawtower',.6,.6,1.1,0xb4643e]];
 const addSel=document.getElementById('add');
 const frSel=document.getElementById('fridge');frSel.innerHTML=FRIDGE_WALL.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
 const shedSel=document.getElementById('shed');shedSel.innerHTML=SHEDS.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
@@ -251,12 +261,16 @@ try{let s=JSON.parse(localStorage.getItem(KEY));
   // starsze -> v10: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
   if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.v=d.v});
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
- if(s&&s.items)s.items=s.items.filter(it=>!/^sz(opa|Kola|Blat|Polka|Regal|Narz)$/.test(it.id)); // pierwsza wersja szopki (160×200 po prawej) – zastąpiona
- if(s&&s.items){DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
+ if(s&&s.items)state=fixState(s)}catch(e){}
+// porządkuje zapisany stan (z localStorage albo z pliku): usuwa nieaktualne meble/wersje, dopisuje nowe z DEFAULT
+function fixState(s){
+ s.items=s.items.filter(it=>!/^sz(opa|Kola|Blat|Polka|Regal|Narz)$/.test(it.id)); // pierwsza wersja szopki (160×200 po prawej) – zastąpiona
+ DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
   if(!FRIDGE_WALL.some(k=>k.id===s.fridge))s.fridge='slupek';if(!RTV_WALL.some(k=>k.id===s.rtv))s.rtv='w2x60b';if(!SHEDS.some(k=>k.id===s.shed))s.shed='srodek';
   s.items=s.items.filter(it=>(!it.fr||FRIDGE_WALL.some(k=>k.id===it.fr))&&(!it.rtv||RTV_WALL.some(k=>k.id===it.rtv))); // usunięte wersje kuchni
-  s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d&&d.shed)it.shed=d.shed});state=s}}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+  s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d&&d.shed)it.shed=d.shed});return s}
+let saveWarned=false;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){if(!saveWarned){saveWarned=true;hud.textContent='Przeglądarka nie zapisuje zmian – użyj „Pobierz plik układu”'}}};
 
 const furn=new THREE.Group();scene.add(furn);
 function build(it){
@@ -305,6 +319,16 @@ function build(it){
    for(let i=0;i<n;i++){const yy=y+.03+i*(h-.06)/(n-1);b(.03,w-.03,yy-.011,yy+.011,d*.3,d*.7)}}break;
   case'rug':b(0,w,0,.012,0,d);break;
   case'plant':b(w*.2,w*.8,0,.4,d*.2,d*.8,M(0x8a6f55));{const s=new THREE.Mesh(new THREE.SphereGeometry(w*.55,16,12),c);s.position.y=.4+w*.6;s.castShadow=true;g.add(s)}break;
+  case'raised':{b(0,w,0,h-.03,0,d);b(.05,w-.05,h-.03,h-.01,.05,d-.05,M(0x3a2c20));const lx=w>=d,L=lx?w:d,n=Math.max(1,Math.round(L/(it.crop==='pom'?.48:.4)));
+   for(let k=0;k<n;k++)for(let r=0;r<(it.crop==='pom'?1:2);r++){const t=L*(k+.5)/n,u=it.crop==='pom'?.5:(r?.7:.3),px=lx?t:w*u,pz=lx?d*u:t; // rośliny: pomidory w 1 rzędzie, papryki w 2
+    if(it.crop==='pom'){b(px-.01,px+.01,h,h+1.6,pz-.01,pz+.01,M(0xc2a56a));const s=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.2,10),M(0x4f7a43));s.position.set(px-w/2,h+.65,pz-d/2);g.add(s);
+     [.4,.75,1.05].forEach((y,i)=>{const f=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),M(0xc22a1a));f.position.set(px-w/2+(i%2?.15:-.15),h+y,pz-d/2+.1);g.add(f)})}
+    else{const s=new THREE.Mesh(new THREE.SphereGeometry(.18,12,10),M(0x4f7a43));s.position.set(px-w/2,h+.22,pz-d/2);g.add(s);
+     const f=new THREE.Mesh(new THREE.SphereGeometry(.04,10,8),M([0xc22a1a,0xe8b81c,0x5f8f2a][(k+r)%3]));f.position.set(px-w/2+.12,h+.2,pz-d/2+.12);g.add(f)}}}break;
+  case'strawtower':{const n=4,r0=Math.min(w,d)/2,th=h/n; // piętra coraz węższe, truskawki na obwodzie
+   for(let k=0;k<n;k++){const r=r0*(1-k*.2),t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,th,20),c);t.position.y=k*th+th/2;g.add(t);
+    for(let a=0;a<6;a++){const an=a/6*Math.PI*2+k*.5,l=new THREE.Mesh(new THREE.SphereGeometry(.07,8,6),M(0x4f7a43));l.position.set(Math.cos(an)*(r-.02),(k+1)*th+.02,Math.sin(an)*(r-.02));g.add(l);
+     if(a%2===0){const f=new THREE.Mesh(new THREE.SphereGeometry(.025,8,6),M(0xd0201c));f.position.set(Math.cos(an)*(r+.03),(k+1)*th-.04,Math.sin(an)*(r+.03));g.add(f)}}}}break;
   case'shed':buildShed(it,g,{wall:c,wallIn:c,roof:M(0x4d5256),floor:M(0x9a8a72),door:M(0x56605a),glass:mat.glass,gutter:M(0x8f969b),barrel:M(0x3f5e46),trim:M(0x3d4246)});break;
   case'tires':{const n=Math.max(1,Math.round(h/.225)),th=h/n,r=Math.min(w,d)/2-.005,y0=it.y||0; // koła leżące w stosie
    for(let k=0;k<n;k++){const yc=y0+k*th+th/2,t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,th-.01,32),c);t.position.y=yc;g.add(t);
@@ -344,7 +368,7 @@ function shedRects(it){const w=it.w,d=it.d,t=.06,X0=-w/2,X1=w/2,Z0=-d/2,Z1=d/2,a
 // ---------- szopka ogrodowa (wspólna dla makiety i trybu realistycznego) ----------
 // Lokalnie: −x = ściana przy płocie sąsiada (wysoka, it.h), +x = ściana z drzwiami (niska, it.h−fall); dach spada w stronę +x.
 // Pola: fall (spadek dachu), doors [[z0,z1,'double'|'z0'|'z1' (strona zawiasów)],…] od krawędzi −z (albo stare door [z0,z1]), doorH, win [z0,z1,y0,y1].
-// Rynna i beczka przy końcu z0 (lokalnie), okap mały (3 cm) przy z1.
+// Rynna przy końcu z0 (lokalnie), okap mały (3 cm) przy z1.
 // Z góry: ściany obniżone (×0,42) i bez dachu, jak w mieszkaniu.
 function buildShed(it,g,m,real){
  const w=it.w,d=it.d,hi=it.h,lo=hi-(it.fall!=null?it.fall:.25),t=.06,X0=-w/2,X1=w/2,Z0=-d/2,Z1=d/2,walk=mode==='walk';
@@ -378,8 +402,7 @@ function buildShed(it,g,m,real){
  if(walk){const rt=.06,a=Math.atan((hi-lo)/w),xa=X0-ovL,xc=(xa+xb)/2,zm=(Z0-ov0+Z1+ov1)/2; // dach (przy płocie 4 cm okapu, od tarasu 15 cm)
   const rf=add(boxUV(new THREE.BoxGeometry((xb-xa)/Math.cos(a),rt,d+ov0+ov1)),m.roof,xc,top(xc)+rt/2/Math.cos(a),zm,g);rf.rotation.z=-a;
   const gy=top(xb)-.05,gt=add(new THREE.CylinderGeometry(.045,.045,d+ov0+ov1,16),m.gutter,gx,gy,zm,g);gt.rotation.x=Math.PI/2; // rynna
-  add(new THREE.CylinderGeometry(.035,.035,gy-.75,12),m.gutter,gx,(gy+.75)/2,Z0-.08,g)} // rura spustowa
- add(new THREE.CylinderGeometry(.28,.26,.75,32),m.barrel,gx-.05,.375,Z0-.33,g); // beczka na deszczówkę
+  add(new THREE.CylinderGeometry(.035,.035,gy-.05,12),m.gutter,gx,(gy+.05)/2,Z0-.08,g)} // rura spustowa
 }
 
 // =====================================================================
@@ -524,6 +547,8 @@ function makeMats(){
   bedding:RM({color:0xf4f2ee,map:T.fabric,roughness:.95,envMapIntensity:.6}),duvet:RM({color:0xdcd8cf,map:T.fabric,bumpMap:T.fabric,bumpScale:.002,roughness:.95,envMapIntensity:.6}),
   pot:RM({color:0xe6e1d8,roughness:.75}),soil:RM({color:0x2a2018,roughness:1}),stem:RM({color:0x4e6b2e,roughness:.8}),
   leaf:[0x2f5a26,0x3d6e2d,0x284f22].map(c=>RM({color:c,roughness:.5,side:D})),
+  planter:RM({map:T.oak,color:0x8f7356,roughness:.85,envMapIntensity:.5}),terra:RM({color:0xb4643e,roughness:.85}),cane:RM({color:0xc2a56a,roughness:.7}),
+  fruit:[0xc22a1a,0xe0a91a,0x5f8f2a,0xd9541c].map(c=>RM({color:c,roughness:.3,envMapIntensity:.8})),straw:RM({color:0xd0201c,roughness:.3,envMapIntensity:.8}),
   tvScreen:RM({color:0x050607,roughness:.04,envMapIntensity:1}),tvBody:RM({color:0x141516,roughness:.4}),
   mirror:RM({color:0xffffff,metalness:1,roughness:0,envMapIntensity:1}),radiator:RM({color:0xf3f3f1,roughness:.3,metalness:.2}),
   tray:RM({color:0xf2f1ed,roughness:.45}),blackMetal:RM({color:0x1d1d1f,roughness:.5,metalness:.5}),
@@ -563,6 +588,12 @@ function plantInto(p,x,y,z,h,r,wd=.45){const pr=Math.max(.05,wd*.32),ph=Math.min
   const tg=new THREE.Group();tg.rotation.x=.1+r()*.6;sg.add(tg);const sl=lh*(.35+r()*.55);
   mesh(new THREE.CylinderGeometry(.003,.005,sl,5),MAT.stem,0,sl/2,0,tg);
   const len=Math.min(.34,.1+lh*.22)*(.7+r()*.5),lf=mesh(leafGeo(len,len*(.34+r()*.16),r),MAT.leaf[Math.floor(r()*3)],0,sl,0,tg);lf.rotation.set(.25+r()*.7,0,(r()-.5)*.6)}}
+// krzaczek bez doniczki (skrzynie warzywne, wieża truskawkowa): n liści z łodyżkami rozchodzącymi się od punktu; tilt = odchylenie od pionu
+function bushInto(p,x,y,z,lh,r,n,len,t0=.1,t1=.7){
+ for(let i=0;i<n;i++){const sg=new THREE.Group();sg.position.set(x,y,z);sg.rotation.y=r()*Math.PI*2;p.add(sg);
+  const tg=new THREE.Group();tg.rotation.x=t0+r()*(t1-t0);sg.add(tg);const sl=lh*(.35+r()*.65);
+  mesh(new THREE.CylinderGeometry(.003,.005,sl,5),MAT.stem,0,sl/2,0,tg);
+  const ln=len*(.7+r()*.5),lf=mesh(leafGeo(ln,ln*(.38+r()*.16),r),MAT.leaf[Math.floor(r()*3)],0,sl,0,tg);lf.rotation.set(.25+r()*.7,0,(r()-.5)*.6)}}
 function basinTop(p,X0,X1,Z0,Z1,top,tk){const L=X1-X0,D=Z1-Z0,zc=(Z0+Z1)/2+.02,rx=L*.36,rz=D*.29;
  const sh=new THREE.Shape();sh.moveTo(X0,-Z1);sh.lineTo(X1,-Z1);sh.lineTo(X1,-Z0);sh.lineTo(X0,-Z0);sh.lineTo(X0,-Z1);
  const ho=new THREE.Path();ho.absellipse(0,-zc,rx,rz,0,Math.PI*2,true);sh.holes.push(ho);
@@ -706,6 +737,30 @@ function buildReal(it){
    bx(X0+.07,X1-.07,y+h*.5,y+h*.78,zt+.013,zt+.032,fabricFor(0xd9d2c5),.012);break} // ręcznik
   case'rug':bx(X0,X1,0,.012,Z0,Z1,rugFor(it.color),.004).castShadow=false;break;
   case'plant':plantInto(P,0,0,0,h,rnd,Math.min(L,D));break;
+  case'raised':{const tk=.035,pl=3,ph=(h-.02)/pl,pm=MAT.planter; // skrzynia z desek (3 deski na wysokość), słupki w narożnikach, ziemia 3 cm pod krawędzią
+   for(let k=0;k<pl;k++){const y0=k*ph+.004,y1=(k+1)*ph-.004;bx(X0,X1,y0,y1,Z1-tk,Z1,pm,.004);bx(X0,X1,y0,y1,Z0,Z0+tk,pm,.004);bx(X0,X0+tk,y0,y1,Z0+tk,Z1-tk,pm,.004);bx(X1-tk,X1,y0,y1,Z0+tk,Z1-tk,pm,.004)}
+   [[X0,Z0],[X1,Z0],[X0,Z1],[X1,Z1]].forEach(([x,z])=>bx(x-(x<0?-.035:.07),x+(x<0?.07:-.035),0,h,z-(z<0?-.035:.07),z+(z<0?.07:-.035),pm,.004));
+   bx(X0-.01,X1+.01,h-.02,h,Z0-.01,Z0+tk+.02,pm,.004);bx(X0-.01,X1+.01,h-.02,h,Z1-tk-.02,Z1+.01,pm,.004); // listwy na krawędzi
+   bx(X0+tk,X1-tk,h-.07,h-.04,Z0+tk,Z1-tk,MAT.soil).castShadow=false;const ys=h-.04;
+   if(it.crop==='pom'){const n=Math.max(1,Math.round(L/.48)); // pomidory w 1 rzędzie, na tyczkach 1,6 m
+    for(let k=0;k<n;k++){const x=X0+L*(k+.5)/n,z=0;cyl(.009,.011,1.6,x,ys,z-.05,MAT.cane,8);cyl(.008,.011,1.35,x,ys,z,MAT.stem,6);
+     for(let y=.12;y<1.4;y+=.2)bushInto(P,x,ys+y,z,.12,rnd,4,.17-.05*y/1.4,.9,1.45);bushInto(P,x,ys+1.35,z,.1,rnd,4,.12,.2,.8);
+     for(let q=0;q<3;q++){const yy=ys+.35+q*.32+rnd()*.08,sx=(rnd()-.5)*.24,sz=.06+rnd()*.08;
+      for(let f=0;f<3+Math.floor(rnd()*3);f++){const fr=.024+rnd()*.012,fm=MAT.fruit[q===2&&f>1?2:(rnd()<.2?3:0)];
+       const o=add(new THREE.SphereGeometry(fr,14,10),fm,x+sx+(rnd()-.5)*.07,yy-f*.025-rnd()*.03,(rnd()<.5?sz:-sz)+(rnd()-.5)*.05);o.scale.y=.85}}}}
+   else{const n=Math.max(1,Math.round(L/.4)),rows=D>.55?2:1; // papryki: niższe krzaczki w 2 rzędach, owoce wiszące
+    for(let k=0;k<n;k++)for(let rw=0;rw<rows;rw++){const x=X0+L*(k+.5)/n+(rw?.1:-.1),z=rows>1?(rw?D*.2:-D*.2):0;
+     cyl(.006,.009,.45,x,ys,z,MAT.stem,6);bushInto(P,x,ys+.12,z,.3,rnd,10,.12,.4,1.2);bushInto(P,x,ys+.4,z,.1,rnd,5,.1,.1,.6);
+     const fm=MAT.fruit[[0,1,2,0,1][(k+rw*2)%5]];for(let f=0;f<2+Math.floor(rnd()*2);f++){const a=rnd()*Math.PI*2,o=add(new THREE.SphereGeometry(.03,14,10),fm,x+Math.cos(a)*.09,ys+.22+rnd()*.12,z+Math.sin(a)*.09);o.scale.set(1,1.7,1)}}}
+   break}
+  case'strawtower':{const n=4,r0=Math.min(L,D)/2,th=h/n; // wieża: 4 piętra z terakoty coraz węższe, truskawki na obwodzie, owoce przewieszone przez krawędź
+   for(let k=0;k<n;k++){const r=r0*(1-k*.2),y0=k*th,rin=k<n-1?r0*(1-(k+1)*.2):0;
+    const pr=[[rin*.95,y0+th-.03],[r-.012,y0+th-.03],[r-.012,y0+th],[r,y0+th],[r-.02,y0+.01],[r-.03,y0]].map(([a,b])=>new THREE.Vector2(Math.max(.001,a),b));
+    add(new THREE.LatheGeometry(pr.reverse(),40),MAT.terra);add(new THREE.CylinderGeometry(r-.02,r-.02,.012,32),MAT.soil,0,y0+th-.035,0).castShadow=false;
+    const m=Math.max(4,Math.round(2*Math.PI*(r+rin)/2/.17));
+    for(let a=0;a<m;a++){const an=(a+k*.5)/m*Math.PI*2,rr=(r+rin)/2+.01,x=Math.cos(an)*rr,z=Math.sin(an)*rr;bushInto(P,x,y0+th-.03,z,.06,rnd,5,.08,.5,1.3);
+     if(a%2===0)for(let f=0;f<2;f++){const ra=r+.02+f*.015,o=add(new THREE.ConeGeometry(.013,.032,10),MAT.straw,Math.cos(an+f*.18)*ra,y0+th-.05-f*.03,Math.sin(an+f*.18)*ra);o.rotation.x=Math.PI}}}
+   break}
   case'shed':buildShed(it,g,{wall:MAT.shedOut,wallIn:MAT.shedIn,roof:MAT.roofE,floor:MAT.shedIn,door:MAT.shedOut,glass:MAT.glass,gutter:MAT.fence,barrel:matFor(0x3c5a44),trim:MAT.frame,handle:MAT.handle},true);break;
   case'tires':{const n=Math.max(1,Math.round(h/.225)),th=h/n,r=Math.min(L,D)/2-.005,y0=it.y||0,rr=.229; // koło 18": felga Ø ok. 46 cm
    for(let k=0;k<n;k++){const yy=y0+k*th,pr=[[rr,.012],[r-.025,0],[r-.004,.025],[r,th/2],[r-.004,th-.025],[r-.025,th],[rr,th-.012]].map(([a,b])=>new THREE.Vector2(a,b));
@@ -803,7 +858,7 @@ function makeReal(){
   for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.16*Math.sin(3.1*x/r+q)*Math.sin(2.7*y/r+1+q)*Math.sin(3.3*z/r+2);p.setXYZ(i,x*k,y*k*.9,z*k)}geo.computeVertexNormals();return boxUV(geo)};
  const tree=(x,z,s,seed)=>{const r=rngOf(seed);mesh(new THREE.CylinderGeometry(.07*s,.1*s,1.8*s,10),MAT.bark,x,.9*s,z,base);
   for(let i=0;i<5;i++)mesh(foliage((.55+r()*.35)*s,seed+i),MAT.leaves,x+(r()-.5)*.9*s,(2.1+r()*1.1)*s,z+(r()-.5)*.9*s,base)};
- tree(3.6,11.4,1.1,'t1');const tr=rngOf('las');
+ const tr=rngOf('las');
  for(let i=0;i<34;i++){const a=tr()*Math.PI*1.25-Math.PI*.12,d=13+tr()*22,x=2.1+Math.cos(a)*d,z=7+Math.sin(a)*d;if(z<7.5)continue;tree(x,z,1.3+tr()*1.4,'f'+i)}
  // stolik i dwa krzesła na tarasie
  mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.3,.72,7.55,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.3,.36,7.55,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.3,.01,7.55,base);
@@ -887,7 +942,35 @@ document.getElementById('sDel').onclick=()=>{const it=selItem();if(it){it.hidden
 addSel.onchange=()=>{const c=CATALOG[addSel.value];if(!c)return;const id='u'+Date.now();
  state.items.push({id,name:c[0],kind:c[1],w:c[2],d:c[3],h:c[4],color:c[5],x:2.1,z:4.4,rot:0,v:'all'});selId=id;addSel.value='';setMode('top');rebuild()};
 document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'slupek',rtv:'w2x60b',shed:'srodek',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
-document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?{sciana_lodowka:(FRIDGE_WALL.find(k=>k.id===(state.fridge||'slupek'))||{}).name,sciana_rtv:(RTV_WALL.find(k=>k.id===(state.rtv||'w2x60b'))||{}).name}:undefined,szopka:(SHEDS.find(k=>k.id===(state.shed||'srodek'))||{}).name,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
+// plik układu: pełny stan (warianty + wszystkie meble), do zachowania na dysku i wczytania w innej przeglądarce / na innym komputerze
+document.getElementById('dl').onclick=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0'),
+  blob=new Blob([JSON.stringify({plik:'a3-milczanska-uklad',wersja:10,zapisano:d.toISOString(),stan:state},null,1)],{type:'application/json'}),
+  a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`uklad-A3-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.json`;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);hud.textContent='Plik układu pobrany'};
+const ulf=document.getElementById('ulf');document.getElementById('ul').onclick=()=>ulf.click();
+// przyjmuje plik układu ({stan}) albo tekst z „Kopiuj układ” ({wariant,meble:[{id,rodzaj,nazwa,x_cm,…}]}); zwraca opis do HUD albo rzuca błąd
+function applyLayout(t){const j=JSON.parse(t);
+ if(j.stan||Array.isArray(j.items)){const s=j.stan||j;if(!Array.isArray(s.items))throw 0;state=fixState(s);selId=null;markBath();rebuild();return'Wczytano układ'}
+ if(!Array.isArray(j.meble))throw 0;
+ if(j.wariant==='dev'||j.wariant==='nasz')state.bath=j.wariant;const byName=(L,n)=>(L.find(k=>k.name===n)||{}).id;
+ if(j.kuchnia){state.fridge=byName(FRIDGE_WALL,j.kuchnia.sciana_lodowka)||state.fridge;state.rtv=byName(RTV_WALL,j.kuchnia.sciana_rtv)||state.rtv}
+ if(j.szopka)state.shed=byName(SHEDS,j.szopka)||state.shed;
+ const used=new Set();let added=0;
+ j.meble.forEach((m,i)=>{let it=state.items.find(x=>x.id===m.id&&!used.has(x))||state.items.find(x=>visible(x)&&x.name===m.nazwa&&!used.has(x))||state.items.find(x=>x.name===m.nazwa&&!used.has(x)&&(!m.rodzaj||x.kind===m.rodzaj));
+  if(!it){const c=CATALOG.find(c=>c[1]===m.rodzaj);if(!m.rodzaj)return;it={id:m.id||('w'+Date.now()+i),name:m.nazwa||(c?c[0]:m.rodzaj),kind:m.rodzaj,color:c?c[5]:0x9a9a9a,v:'all'};state.items.push(it);added++}
+  used.add(it);it.hidden=false;const n=(v,o)=>typeof v==='number'?v/100:o;
+  Object.assign(it,{x:n(m.x_cm,it.x),z:n(m.z_cm,it.z),w:n(m.szer,it.w),d:n(m.gleb,it.d),h:n(m.wys,it.h),rot:typeof m.obrot==='number'?m.obrot:(it.rot||0)})});
+ state.items.forEach(x=>{if(visible(x)&&!used.has(x))x.hidden=true}); // meble usunięte w skopiowanym układzie
+ selId=null;markBath();rebuild();return'Wklejono układ (mebli: '+used.size+(added?', nowe: '+added:'')+')'}
+ulf.onchange=()=>{const f=ulf.files[0];ulf.value='';if(!f)return;f.text().then(t=>{applyLayout(t);hud.textContent='Wczytano układ: '+f.name})
+ .catch(()=>alert('To nie jest plik układu z tego modelu.'))};
+const pasteBox=document.getElementById('pasteBox'),pasteTxt=document.getElementById('pastetxt');
+document.getElementById('paste').onclick=()=>{pasteBox.hidden=false;pasteTxt.value='';pasteTxt.focus();
+ if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(t=>{if(!pasteTxt.value&&/^\s*\{/.test(t))pasteTxt.value=t}).catch(()=>{})};
+document.getElementById('pasteNo').onclick=()=>{pasteBox.hidden=true};
+document.getElementById('pasteOk').onclick=()=>{try{hud.textContent=applyLayout(pasteTxt.value);pasteBox.hidden=true}
+ catch(e){alert('Nie rozpoznaję tego tekstu. Wklej cały tekst z „Kopiuj układ” (zaczyna się od { i kończy na }) albo zawartość pliku układu.')}};
+document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?{sciana_lodowka:(FRIDGE_WALL.find(k=>k.id===(state.fridge||'slupek'))||{}).name,sciana_rtv:(RTV_WALL.find(k=>k.id===(state.rtv||'w2x60b'))||{}).name}:undefined,szopka:(SHEDS.find(k=>k.id===(state.shed||'srodek'))||{}).name,meble:state.items.filter(visible).map(i=>({id:i.id,rodzaj:i.kind,nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
  const box=document.getElementById('copybox');box.value=txt;
  navigator.clipboard.writeText(txt).then(()=>{hud.textContent='Układ skopiowany – wklej go w czacie'}).catch(()=>{box.style.display='block';box.select()})};
 

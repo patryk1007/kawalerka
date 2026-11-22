@@ -1,7 +1,7 @@
 """Zrzuty ekranu modelu do sprawdzenia zmian.
 Użycie: pip install playwright && playwright install chromium
         python3 tools/screenshot.py
-Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_deweloper.png, shots/szopka.png
+Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_deweloper.png, shots/szopka.png, shots/warzywnik.png
        oraz tryb realistyczny: shots/real_*.png (python3 tools/screenshot.py real – tylko te)
 """
 import asyncio, pathlib, sys
@@ -36,7 +36,8 @@ async def real(pg):
     views = [("real_wejscie", 1.25, .8, 3.1416, -.05), ("real_pokoj", 2.7, 6.3, .25, -.08),
              ("real_kuchnia", 1.4, 4.9, -0.75, -.12), ("real_lazienka", 2.2, .5, -2.45, -.2),
              ("real_lustro", 3.3, 1.35, 0.15, -.1), ("real_ogrod", 2.4, 10.5, 0, .02),
-             ("real_szopka", 1.6, 10.6, -.76, -.1), ("real_szopka_wejscie", 2.6, 8.2, -1.5708, -.3), ("real_szopka_blat", 3.95, 8.0, 3.1416, -.45), ("real_szopka_regal", 3.95, 8.4, 0, -.25)]
+             ("real_szopka", 1.6, 10.6, -.76, -.1), ("real_szopka_wejscie", 2.6, 8.2, -1.5708, -.3), ("real_szopka_blat", 3.95, 8.0, 3.1416, -.45), ("real_szopka_regal", 3.95, 8.4, 0, -.25),
+             ("real_warzywnik", 2.9, 7.6, 2.62, -.28), ("real_truskawki", 1.5, 8.2, 2.2, -.35)]
     for name, x, z, yaw, pitch in views:
         await pg.evaluate(f"A3.view({x},{z},{yaw},{pitch})")
         await pg.wait_for_timeout(900)
@@ -66,6 +67,9 @@ async def mock(pg):
     await pg.evaluate("A3.view(1.6,10.6,-.76,-.1)")
     await pg.wait_for_timeout(500)
     await pg.screenshot(path=OUT / "szopka.png")
+    await pg.evaluate("A3.view(2.9,7.6,2.62,-.28)")
+    await pg.wait_for_timeout(500)
+    await pg.screenshot(path=OUT / "warzywnik.png")
     await pg.evaluate("A3.view(1.25,.8,3.1416,-.05)")
     await pg.click("#mode button[data-m=top]")
     await pg.wait_for_timeout(800)

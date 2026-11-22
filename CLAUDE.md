@@ -49,13 +49,17 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Pola opcjonalne mebla: `y` (wys. dolnej krawędzi: szafki wiszące, lustro, drabinka), `mods` (linie podziału frontów), `hob:2` (płyta 2-palnikowa), `fr` (wariant lodówki), `sink`, `face:'+x'` (front szafy od +x).
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
   bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan),
-  shed (szopka, `buildShed` wspólny dla obu trybów), tires (stos kół), bench (blat warsztatowy), rack (półki/regał: `levels` = wys. półek, `posts`), tools (narzędzia na listwie). Nowy rodzaj = nowy `case`.
+  shed (szopka, `buildShed` wspólny dla obu trybów), tires (stos kół), bench (blat warsztatowy), rack (półki/regał: `levels` = wys. półek, `posts`), tools (narzędzia na listwie), raised (skrzynia warzywna, pole `crop`: 'pom' pomidory na tyczkach | 'pap' papryki), strawtower (wieża truskawkowa, 4 piętra). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
 - Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v10`; v1–v9 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
-- „Kopiuj układ” daje JSON z pozycjami w cm, do wklejenia w rozmowie.
+- „Kopiuj układ” daje JSON z pozycjami w cm (plus `id`, `rodzaj`), do wklejenia w rozmowie. „Wklej układ” (`applyLayout`) przyjmuje ten tekst albo plik układu:
+  meble dopasowuje po `id`, potem po nazwie; brakujące tworzy wg `rodzaj`, widoczne meble spoza listy ukrywa (jak „Usuń”).
+- „Pobierz plik układu” zapisuje pełny stan do `uklad-A3-RRRR-MM-DD_GGMM.json` (`{plik,wersja,zapisano,stan}`), „Wczytaj plik” go przywraca.
+  Wczytany stan przechodzi przez `fixState(s)` – tę samą normalizację co stan z `localStorage` (usunięte wersje, nowe meble z `DEFAULT`).
+  Gdy `localStorage` nie działa, HUD podpowiada użycie pliku.
 
 ## Tryb realistyczny („Wygląd: Makieta | Realistyczny”)
 - Ten sam `state.items` rysowany drugim builderem `buildReal(it)`; `rebuild()` wybiera builder wg `style`. Edycja, warianty i kolizje wspólne.
@@ -99,7 +103,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 
 - Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): wąska 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (x 3,50–4,35, z 7,00–9,40).
   Pierwsza wersja (160×200 po prawej, id `sz*`) odrzucona – przy wczytaniu usuwana z zapisanego stanu; obecne meble mają id `sw*`.
-  Szopka ma `rot:180`: lokalne −x (wysoka ściana 2,20) stoi przy płocie, dach spada na nasz ogródek (front 2,00, pole `fall`), rynna + beczka od strony ogrodu.
+  Szopka ma `rot:180`: lokalne −x (wysoka ściana 2,20) stoi przy płocie, dach spada na nasz ogródek (front 2,00, pole `fall`), rynna od strony ogrodu (bez beczki).
   Bez wchodzenia do środka: front od strony ogródka z dwoma drzwiami dwuskrzydłowymi (pole `doors` [[z0,z1,'double'|'z0'|'z1']] lokalnie od z0, czyli przy rot 180 od końca od ogrodu):
   przy budynku (z 7,10–8,14) narzędzia na listwie na ścianie od budynku + półka 1,75 + regał 70×60 z 5 półkami;
   od ogrodu (z 8,20–9,32) blat warsztatowy 118×73 na 1,06 (96 cm nad podłogą szopki) z tablicą narzędziową i 2 półkami przy płocie (1,55 i 1,85), pod blatem koła 4× 225/40 R18 w stosie (z 8,67–9,32) i skrzynka.
@@ -108,6 +112,10 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   przejście 80×73; od ogrodu blat 73×72 nad kołami (front do przejścia) + 2 półki na ścianie od ogrodu; od budynku regał 73×35 na ścianie od budynku + narzędzia na ścianie przy płocie + półka nad wejściem.
   Wnętrze 73 cm szerokości (koło Ø64). Podłoga na podeście 10 cm. Kolizje szopki = ściany (`shedRects`). Z góry: ściany ×0,42, bez dachu.
   Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy (2,20 m przy płocie), prąd do warsztatu.
+
+- Ogródek „warzywnik” (22.11.2026, propozycja, v:'all'): skrzynie podwyższone 80 cm szer., 75 cm wys. w L przy płocie po prawej (x≈0) i tylnym,
+  środek wolny (trawa ok. 2,8×3,2 m): `gPom` pomidory 240×80 (x −0,10–2,30, z 11,35–12,15), `gPap` papryki 200×80 (x −0,10–0,70, z 9,35–11,35),
+  `gTrusk` wieża truskawkowa Ø60, wys. 110 (x 0,15–0,75, z 8,45–9,05) blisko tarasu. Lewy tylny narożnik wolny (drzewo usunięte 22.11.2026).
 
 ## Pomysły na dalsze kroki
 - Łóżko vs sofa rozkładana.
