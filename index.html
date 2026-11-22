@@ -60,9 +60,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
  <div class="seg" id="mode"><button data-m="walk" class="on">Spacer</button><button data-m="top">Z góry</button></div>
  <div class="lbl">Wariant łazienki i kuchni</div>
  <div class="seg" id="bath"><button data-v="dev">Deweloper</button><button data-v="nasz" class="on">Nasz plan</button></div>
- <div id="frBox"><div class="lbl"><label for="fridge">Wersja kuchni (nasz plan)</label></div>
+ <div id="frBox"><div class="lbl"><label for="fridge">Kuchnia: ściana z lodówką (pod łazienką)</label></div>
  <select id="fridge"></select>
- <p class="help" id="frDesc" style="margin-top:6px"></p></div>
+ <p class="help" id="frDesc" style="margin-top:6px"></p>
+ <div class="lbl"><label for="rtv">Kuchnia: ściana od RTV (płyta)</label></div>
+ <select id="rtv"></select>
+ <p class="help" id="rtvDesc" style="margin-top:6px"></p></div>
  <div class="lbl">Dodaj mebel</div>
  <select id="add"><option value="">Wybierz…</option></select>
  <div id="sel" hidden>
@@ -148,23 +151,32 @@ R('lod','Lodówka (zabudowa)','tall',1.9,2.52,2.07,2.67,2.1,COL.oak,'dev');
 R('blat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak,'dev');
 R('blat2','Blat z płytą','cook',3.65,4.25,2.76,4.63,.9,COL.oak,'dev');
 R('gorne','Szafki górne','upper',3.9,4.25,2.76,4.63,.72,COL.oak,'dev');
-// kuchnia – nasz plan (22.11.2026): szafki wiszące 100 cm pod sufit, przy RTV tylko 3×40 cm
-// pole fr: 'pod' | 'wolna' – przełącznik „Lodówka” (tylko w „Nasz plan”)
-const UY=H-1; // dół szafek wiszących
+// kuchnia – nasz plan (22.11.2026): szafki wiszące 100 cm = górne 40 wys. × 60 gł. pod sufitem + dolne 60 wys. × 40 gł. (bez przerwy)
+// pole fr: wersja ściany z lodówką (lista FRIDGE_WALL), pole rtv: wersja ściany od RTV (lista RTV_WALL)
+const UY=H-1,UT=H-.4; // dół szafek wiszących (dolnych), dół górnych
+// para szafek wiszących wzdłuż ściany pod łazienką (front +z)
+const UPZ=(id,x0,x1,mods,o)=>{R(id+'g','Szafki wiszące górne (40 wys., 60 gł.)','upper',x0,x1,2.07,2.67,.4,COL.oak,'nasz');RX(Object.assign({y:UT,mods},o));
+ R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',x0,x1,2.07,2.47,.6,COL.oak,'nasz');RX(Object.assign({y:UY,mods},o))};
+// para szafek wiszących wzdłuż ściany od RTV (front −x)
+const UPX=(id,z0,z1,mods,o,top=true)=>{if(top){R(id+'g','Szafki wiszące górne (40 wys., 60 gł.)','upper',3.65,4.25,z0,z1,.4,COL.oak,'nasz');RX(Object.assign({y:UT,mods},o))}
+ R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',3.85,4.25,z0,z1,.6,COL.oak,'nasz');RX(Object.assign({y:UY,mods},o))};
 // a) lodówka podblatowa: jeden ciąg blatu pod łazienką
 R('nBlatP','Blat: lodówka podblatowa + zmywarka + zlew','sinkc',1.9,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'pod',mods:[.6,.6,.55],sink:[1.25,1.7]});
-R('nGP','Szafki wiszące 100 cm','upper',1.9,3.65,2.07,2.42,1,COL.oak,'nasz');RX({fr:'pod',y:UY,mods:[.6,.6,.55]});
+UPZ('nGP',1.9,3.65,[.6,.6,.55],{fr:'pod'});
 // b) lodówka wolnostojąca 60×145
 R('nLod','Lodówka wolnostojąca 60×145','fridge',1.9,2.5,2.07,2.69,1.45,COL.white,'nasz');RX({fr:'wolna'});
 R('nBlat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'wolna',mods:[.6,.53]});
-R('nGW','Szafki wiszące 100 cm','upper',1.9,3.65,2.07,2.42,1,COL.oak,'nasz');RX({fr:'wolna',y:UY,mods:[.62,.6,.53]});
+UPZ('nGW',1.9,3.65,[.62,.6,.53],{fr:'wolna'});
 // c) słupek od wejścia: lodówka do zabudowy (wnęka 140) + szafka do sufitu; podział frontów na wys. UY = linia dołu szafek wiszących
-R('nSlup','Słupek: lodówka do zabudowy 140 + szafka','slupek',1.9,2.5,2.07,2.67,H,COL.oak,'nasz');RX({fr:'slupek',split:[.1,UY]});
+R('nSlup','Słupek: lodówka do zabudowy 140 + szafka','slupek',1.9,2.5,2.07,2.67,H,COL.oak,'nasz');RX({fr:'slupek',split:[.1,UY,UT]}); // podziały w liniach szafek wiszących
 R('nBlatS','Blat: zmywarka + zlew','sinkc',2.5,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'slupek',mods:[.6,.55],sink:[.65,1.1]});
-R('nGS','Szafki wiszące 100 cm','upper',2.5,3.65,2.07,2.42,1,COL.oak,'nasz');RX({fr:'slupek',y:UY,mods:[.6,.55]});
-// ściana od RTV: 3 moduły po 40 cm
+UPZ('nGS',2.5,3.65,[.6,.55],{fr:'slupek'});
+// ściana od RTV: dolne 3 moduły po 40 cm z płytą 2-palnikową (wspólne), wiszące wg wersji
 R('nBlat2','Blat z płytą 2-palnikową (3×40)','cook',3.65,4.25,2.76,3.96,.9,COL.oak,'nasz');RX({hob:2,mods:[.4,.4,.4]});
-R('nG2v2','Szafki wiszące 100 cm (2×60)','upper',3.9,4.25,2.76,3.96,1,COL.oak,'nasz');RX({y:UY,mods:[.6,.6]});
+UPX('nR60',2.76,3.96,[.6,.6],{rtv:'w2x60'});
+UPX('nR40',2.76,3.96,[.4,.4,.4],{rtv:'w3x40'});
+UPX('nR60b',2.76,3.96,[.6,.6],{rtv:'w2x60b'},false); // bez górnych 40×60 – nad szafkami wolna ściana do sufitu
+UPX('nR40b',2.76,3.96,[.4,.4,.4],{rtv:'w3x40b'},false);
 // pokój
 R('stol','Stół','table',0,.8,2.83,3.63,.75,COL.wood);
 R('kr1','Krzesło','chair',.19,.59,2.35,2.79,.85,COL.dark);
@@ -186,28 +198,35 @@ R('nWc','WC podwieszane','wc',2.82,3.22,1.22,1.75,.4,COL.white,'nasz');
 R('nSz','Szafa z pralką (do sufitu)','wardrobe',2,2.62,1.3,1.95,H,COL.oak,'nasz');
 R('nLu','Lustro 60×80','mirror',2.85,3.45,0,.02,.8,0xc9d6dc,'nasz');DEFAULT[DEFAULT.length-1].y=1.1; // nad umywalką, dół 110 cm
 R('nDr','Grzejnik drabinkowy 50×125','ladder',3.59,4.09,0,.05,1.25,0xf4f4f2,'nasz');DEFAULT[DEFAULT.length-1].y=1.15; // 115 cm nad podłogą, 16 cm od prawej ściany
-// wersje kuchni „Nasz plan” (lista rozwijana). Nowa wersja = nowy wpis + meble z polem fr:'<id>'
-const KITCHEN=[
+// wersje kuchni „Nasz plan” – osobno dla każdej ściany (listy rozwijane).
+// Nowa wersja = nowy wpis + meble z polem fr:'<id>' (ściana z lodówką) albo rtv:'<id>' (ściana od RTV)
+const FRIDGE_WALL=[
  {id:'pod',name:'A · Lodówka podblatowa',desc:'Wolny blat ok. 210 cm. Lodówka do zabudowy pod blat, 120–140 l, zamrażalnik ok. 15 l.'},
  {id:'wolna',name:'B · Wolnostojąca 60×145',desc:'Wolny blat ok. 150 cm. Ok. 200 l. Biała bryła przerywa linię frontów.'},
  {id:'slupek',name:'C · Słupek z lodówką 140',desc:'Wolny blat ok. 150 cm. Lodówka do zabudowy (wnęka 140), ok. 200 l; podział frontów na 155 cm = linia szafek wiszących.'}];
+const RTV_WALL=[
+ {id:'w2x60',name:'Wiszące 2×60',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 2 moduły po 60 cm (górne 40×60 gł., dolne 60×40 gł.).'},
+ {id:'w3x40',name:'Wiszące 3×40',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 3 moduły po 40 cm, fronty w osi z dolnymi szafkami.'},
+ {id:'w2x60b',name:'Wiszące 2×60, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące tylko 60 wys. × 40 gł. (1,55–2,15 m), nad nimi 40 cm wolnej ściany.'},
+ {id:'w3x40b',name:'Wiszące 3×40, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące tylko 60 wys. × 40 gł. (1,55–2,15 m), 3 moduły po 40 cm, nad nimi 40 cm wolnej ściany.'}];
 const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×200','bed',1.4,2.1,.5,COL.blue],['Sofa rozkładana 200','sofa',2,.95,.85,COL.fabric],['Fotel','chair',.8,.8,.85,COL.fabric],['Biurko 120×60','table',1.2,.6,.75,COL.wood],['Stół 120×80','table',1.2,.8,.75,COL.wood],['Krzesło','chair',.44,.44,.85,COL.dark],['Szafa 100×60','wardrobe',1,.6,2.2,COL.oak],['Regał 80×35','wardrobe',.8,.35,1.9,COL.oak],['Komoda 120×45','tall',1.2,.45,.85,COL.oak],['Wyspa / barek 120×60','tall',1.2,.6,.95,COL.oak],['Dywan 160×230','rug',1.6,2.3,.01,0xc9c1b4],['Roślina','plant',.45,.45,1.3,0x4f7a43]];
 const addSel=document.getElementById('add');
-const frSel=document.getElementById('fridge');frSel.innerHTML=KITCHEN.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+const frSel=document.getElementById('fridge');frSel.innerHTML=FRIDGE_WALL.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+const rtvSel=document.getElementById('rtv');rtvSel.innerHTML=RTV_WALL.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
 addSel.innerHTML+=CATALOG.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
 
-let state={bath:'nasz',fridge:'pod',items:JSON.parse(JSON.stringify(DEFAULT))};
-const KEY='a3-milczanska-uklad-v8';
+let state={bath:'nasz',fridge:'pod',rtv:'w2x60',items:JSON.parse(JSON.stringify(DEFAULT))};
+const KEY='a3-milczanska-uklad-v9';
 try{let s=JSON.parse(localStorage.getItem(KEY));
- if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v7'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
+ if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v8'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v7'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
   if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v1'));
    // v1 -> v2: zostają pozycje, kolory domyślnych mebli z nowej palety (kontrast)
    if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.color=d.color})}
-  // starsze -> v8: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
+  // starsze -> v9: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
   if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.v=d.v});
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
  if(s&&s.items){DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
-  if(!KITCHEN.some(k=>k.id===s.fridge))s.fridge='pod';state=s}}catch(e){}
+  if(!FRIDGE_WALL.some(k=>k.id===s.fridge))s.fridge='pod';if(!RTV_WALL.some(k=>k.id===s.rtv))s.rtv='w2x60';state=s}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
 
 const furn=new THREE.Group();scene.add(furn);
@@ -263,7 +282,7 @@ const edgeMat=new THREE.LineBasicMaterial({color:0x1c1916});
 const glassEdgeMat=new THREE.LineBasicMaterial({color:0x6d7f86});
 function addEdges(g){g.children.slice().forEach(o=>{if(!o.isMesh)return;
  const l=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,30),o.material===mat.glass?glassEdgeMat:edgeMat);l.raycast=()=>{};o.add(l)})}
-const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath)&&(!it.fr||it.fr===(state.fridge||'pod'));
+const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath)&&(!it.fr||it.fr===(state.fridge||'pod'))&&(!it.rtv||it.rtv===(state.rtv||'w2x60'));
 function rebuild(){
  while(furn.children.length)furn.remove(furn.children[0]);
  state.items.filter(visible).forEach(it=>{const g=build(it);furn.add(g);if(it.id===selId)outline(g)});
@@ -283,9 +302,11 @@ function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.querySelectorAll('#bath button').forEach(b=>b.onclick=()=>{state.bath=b.dataset.v;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()});
 function markBath(){document.querySelectorAll('#bath button').forEach(b=>b.classList.toggle('on',b.dataset.v===state.bath));
- frSel.value=state.fridge||'pod';const k=KITCHEN.find(k=>k.id===frSel.value);document.getElementById('frDesc').textContent=k?k.desc:'';
+ frSel.value=state.fridge||'pod';const k=FRIDGE_WALL.find(k=>k.id===frSel.value);document.getElementById('frDesc').textContent=k?k.desc:'';
+ rtvSel.value=state.rtv||'w2x60';const r=RTV_WALL.find(k=>k.id===rtvSel.value);document.getElementById('rtvDesc').textContent=r?r.desc:'';
  document.getElementById('frBox').hidden=state.bath!=='nasz'}
 frSel.onchange=()=>{state.fridge=frSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
+rtvSel.onchange=()=>{state.rtv=rtvSel.value;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()};
 document.getElementById('toggle').onclick=()=>document.getElementById('panel').classList.toggle('open');
 
 // ---------- zaznaczanie i edycja ----------
@@ -299,8 +320,8 @@ document.getElementById('sRot').onclick=()=>{const it=selItem();if(it){it.rot=(i
 document.getElementById('sDel').onclick=()=>{const it=selItem();if(it){it.hidden=true;selId=null;rebuild()}};
 addSel.onchange=()=>{const c=CATALOG[addSel.value];if(!c)return;const id='u'+Date.now();
  state.items.push({id,name:c[0],kind:c[1],w:c[2],d:c[3],h:c[4],color:c[5],x:2.1,z:4.4,rot:0,v:'all'});selId=id;addSel.value='';setMode('top');rebuild()};
-document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'pod',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
-document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?(KITCHEN.find(k=>k.id===(state.fridge||'pod'))||{}).name:undefined,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
+document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'pod',rtv:'w2x60',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
+document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,kuchnia:state.bath==='nasz'?{sciana_lodowka:(FRIDGE_WALL.find(k=>k.id===(state.fridge||'pod'))||{}).name,sciana_rtv:(RTV_WALL.find(k=>k.id===(state.rtv||'w2x60'))||{}).name}:undefined,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
  const box=document.getElementById('copybox');box.value=txt;
  navigator.clipboard.writeText(txt).then(()=>{hud.textContent='Układ skopiowany – wklej go w czacie'}).catch(()=>{box.style.display='block';box.select()})};
 

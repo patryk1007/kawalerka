@@ -1,7 +1,7 @@
 """Zrzuty ekranu modelu do sprawdzenia zmian.
 Użycie: pip install playwright && playwright install chromium
         python3 tools/screenshot.py
-Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_slupek.png, shots/z_gory_deweloper.png
+Wynik: shots/spacer.png, shots/z_gory.png, shots/z_gory_slupek.png, shots/z_gory_rtv_bez_gornych.png, shots/z_gory_deweloper.png
 """
 import asyncio, pathlib
 from playwright.async_api import async_playwright
@@ -28,6 +28,10 @@ async def main():
         await pg.wait_for_timeout(800)
         await pg.screenshot(path=OUT / "z_gory_slupek.png")
         await pg.select_option("#fridge", "pod")
+        await pg.select_option("#rtv", "w2x60b")
+        await pg.wait_for_timeout(800)
+        await pg.screenshot(path=OUT / "z_gory_rtv_bez_gornych.png")
+        await pg.select_option("#rtv", "w2x60")
         await pg.click("#bath button[data-v=dev]")
         await pg.wait_for_timeout(800)
         await pg.screenshot(path=OUT / "z_gory_deweloper.png")
