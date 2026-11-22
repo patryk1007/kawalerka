@@ -98,13 +98,14 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Przedpokój „Nasz plan”: szafa do sufitu (z 0,62–2,04) + obudowa GK przewodu kominowego w narożniku przy wejściu
   (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
 
-- Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): 160×200 przy płocie sąsiada i elewacji, po prawej po wyjściu na taras (x −0,10–1,50, z 7,00–9,00).
-  Dach jednospadowy 2,20 przy płocie → 1,95 od tarasu (pole `fall`), okap 4 cm od płotu / 15 cm od tarasu, rynna + rura do beczki na deszczówkę.
-  Drzwi 80×185 w ścianie od tarasu (z 7,70–8,50, pole `door` od krawędzi z0), otwierane na zewnątrz w stronę ogrodu; okienko nad blatem (`win`). Podłoga na podeście 10 cm.
-  Wnętrze: koła 4× 225/40 R18 w stosie (x 0,79–1,44, z 7,06–7,71, wys. 90) pod blatem warsztatowym 1,06 od gruntu (96 od podłogi szopki), tablica narzędziowa, 2 półki 30 cm (1,55 i 1,85);
-  naprzeciw regał 94×40 (5 półek) i narzędzia ogrodowe na listwie. Przejście między blatem a regałem ok. 83 cm. Kolizje szopki = tylko ściany (`shedRects`), można wejść w spacerze.
-  Z góry: ściany ×0,42, bez dachu (`setMode` przebudowuje meble w obu trybach). Stolik z krzesłami na tarasie (tryb realistyczny) przesunięty na x 2,75.
-  Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy, prąd do warsztatu.
+- Ogródek „szopka” (22.11.2026, koncepcja, v:'all'): wąska 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (x 3,50–4,35, z 7,00–9,40).
+  Pierwsza wersja (160×200 po prawej, id `sz*`) odrzucona – przy wczytaniu usuwana z zapisanego stanu; obecne meble mają id `sw*`.
+  Szopka ma `rot:180`: lokalne −x (wysoka ściana 2,20) stoi przy płocie, dach spada na nasz ogródek (front 2,00, pole `fall`), rynna + beczka od strony ogrodu.
+  Bez wchodzenia do środka: front od strony ogródka z dwoma drzwiami dwuskrzydłowymi (pole `doors` [[z0,z1,'double'|'z0'|'z1']] lokalnie od z0, czyli przy rot 180 od końca od ogrodu):
+  przy budynku (z 7,10–8,14) narzędzia na listwie na ścianie od budynku + półka 1,75 + regał 70×60 z 5 półkami;
+  od ogrodu (z 8,20–9,32) blat warsztatowy 118×73 na 1,06 (96 cm nad podłogą szopki) z tablicą narzędziową i 2 półkami przy płocie (1,55 i 1,85), pod blatem koła 4× 225/40 R18 w stosie (z 8,67–9,32) i skrzynka.
+  Wnętrze 73 cm szerokości (koło Ø64). Podłoga na podeście 10 cm. Kolizje szopki = ściany (`shedRects`). Z góry: ściany ×0,42, bez dachu.
+  Do sprawdzenia przez właścicieli: zgody wspólnoty / regulamin ogródków, MPZP i przepisy o odległości od granicy (2,20 m przy płocie), prąd do warsztatu.
 
 ## Pomysły na dalsze kroki
 - Łóżko vs sofa rozkładana.

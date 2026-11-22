@@ -211,15 +211,18 @@ R('nWc','WC podwieszane','wc',2.82,3.22,1.22,1.75,.4,COL.white,'nasz');
 R('nSz','Szafa z pralką (do sufitu)','wardrobe',2,2.62,1.3,1.95,H,COL.oak,'nasz');
 R('nLu','Lustro 60×80','mirror',2.85,3.45,0,.02,.8,0xc9d6dc,'nasz');DEFAULT[DEFAULT.length-1].y=1.1; // nad umywalką, dół 110 cm
 R('nDr','Grzejnik drabinkowy 50×125','ladder',3.59,4.09,0,.05,1.25,0xf4f4f2,'nasz');DEFAULT[DEFAULT.length-1].y=1.15; // 115 cm nad podłogą, 16 cm od prawej ściany
-// ogródek: szopka 160×200 przy płocie sąsiada i elewacji (po prawej po wyjściu na taras), koncepcja 22.11.2026
-// dach jednospadowy: 2,20 przy płocie → 1,95 od strony tarasu (woda na nasz ogródek, rynna + beczka); drzwi 80 od strony tarasu, okienko nad blatem
-// podłoga szopki na podeście 10 cm (y=0,10); wnętrze x −0,04…1,44, z 7,06…8,94
-R('szopa','Szopka ogrodowa 160×200','shed',-.10,1.50,7.00,9.00,2.20,0x6f7a72);RX({fall:.25,door:[.70,1.50],doorH:1.85,win:[.15,.55,1.12,1.48]});
-R('szKola','Koła 4× 225/40 R18 (stos)','tires',.79,1.44,7.06,7.71,.90,0x2b2b2b);RX({y:.10}); // Corolla 18": opona ok. 64×22,5 cm
-R('szBlat','Blat warsztatowy (96 cm nad podłogą szopki)','bench',-.04,1.44,7.06,7.71,1.06,COL.wood); // nad stosem kół, 2 cm luzu
-R('szPolka','Półki nad blatem (2×, gł. 30)','rack',-.04,1.44,7.06,7.36,.37,COL.wood);RX({y:1.5,levels:[1.55,1.85]});
-R('szRegal','Regał na drobiazgi ogrodowe 94×40','rack',.50,1.44,8.54,8.94,1.80,COL.wood);RX({levels:[.16,.55,.95,1.35,1.75],posts:true,face:'-z'});
-R('szNarz','Narzędzia ogrodowe na listwie','tools',-.04,.50,8.64,8.94,1.65,0x7a5a3a);RX({face:'-z'});
+// ogródek: wąska szopka 85×240 przy płocie sąsiada i elewacji, po LEWEJ po wyjściu na taras (zmiana 22.11.2026; wcześniej 160×200 po prawej)
+// między ościeżnicą drzwi tarasowych (x 3,42) a płotem (x 4,40) jest ok. 95 cm. Bez wchodzenia do środka – wszystko dostępne od frontu przez dwie pary drzwi.
+// rot 180: lokalne −x (wysoka ściana, 2,20) = przy płocie, dach spada na nasz ogródek (front 2,00), rynna + beczka od strony ogrodu.
+// pole doors: [z0,z1,'double'] w układzie lokalnym od krawędzi z0 – przy rot 180 liczone od końca szopki od ogrodu (z 9,40)
+// podłoga szopki na podeście 10 cm (y=0,10); wnętrze x 3,56…4,29 (73 cm), z 7,06…9,34
+R('swSzopa','Szopka wąska 85×240','shed',3.50,4.35,7.00,9.40,2.20,0x6f7a72);RX({rot:180,fall:.20,doorH:1.85,doors:[[.08,1.20,'double'],[1.26,2.30,'double']]});
+R('swNarz','Narzędzia ogrodowe na listwie (ściana od budynku)','tools',3.56,4.29,7.06,7.36,1.65,0x7a5a3a);
+R('swPolkaN','Półka nad narzędziami (gł. 24)','rack',3.56,4.29,7.06,7.30,.2,COL.wood);RX({y:1.7,levels:[1.75]});
+R('swRegal','Regał na drobiazgi ogrodowe 70×60','rack',3.67,4.27,7.42,8.12,1.80,COL.wood);RX({levels:[.16,.55,.95,1.35,1.75],posts:true,face:'-x'});
+R('swBlat','Blat warsztatowy 118×73 (96 cm nad podłogą szopki)','bench',3.56,4.29,8.16,9.34,1.06,COL.wood);RX({face:'-x'}); // nad kołami, 2 cm luzu
+R('swKola','Koła 4× 225/40 R18 (stos)','tires',3.60,4.25,8.67,9.32,.90,0x2b2b2b);RX({y:.10}); // Corolla 18": opona ok. 64×22,5 cm
+R('swPolka','Półki nad blatem (2×, gł. 30)','rack',3.99,4.29,8.16,9.34,.37,COL.wood);RX({y:1.5,levels:[1.55,1.85],face:'-x'});
 // wersje kuchni „Nasz plan” – osobno dla każdej ściany (listy rozwijane).
 // Nowa wersja = nowy wpis + meble z polem fr:'<id>' (ściana z lodówką) albo rtv:'<id>' (ściana od RTV)
 const FRIDGE_WALL=[
@@ -247,6 +250,7 @@ try{let s=JSON.parse(localStorage.getItem(KEY));
   // starsze -> v10: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
   if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.v=d.v});
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
+ if(s&&s.items)s.items=s.items.filter(it=>!/^sz(opa|Kola|Blat|Polka|Regal|Narz)$/.test(it.id)); // pierwsza wersja szopki (160×200 po prawej) – zastąpiona
  if(s&&s.items){DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
   if(!FRIDGE_WALL.some(k=>k.id===s.fridge))s.fridge='pod';if(!RTV_WALL.some(k=>k.id===s.rtv))s.rtv='w2x60';state=s}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
@@ -302,7 +306,8 @@ function build(it){
   case'tires':{const n=Math.max(1,Math.round(h/.225)),th=h/n,r=Math.min(w,d)/2-.005,y0=it.y||0; // koła leżące w stosie
    for(let k=0;k<n;k++){const yc=y0+k*th+th/2,t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,th-.01,32),c);t.position.y=yc;g.add(t);
     const rim=new THREE.Mesh(new THREE.CylinderGeometry(.229,.229,th-.004,32),M(0xa3a9ad));rim.position.y=yc;g.add(rim)}}break;
-  case'bench':b(0,w,h-.04,h,0,d);b(0,.05,.1,h-.04,d-.05,d);b(.02,w-.02,h+.03,h+.47,0,.012,M(0xc9b28a));break; // blat + noga od płotu + tablica narzędziowa
+  case'bench':b(0,w,h-.04,h,0,d);if(frontOf(it)==='-x'){b(0,.05,.1,h-.04,0,.05);b(w-.012,w,h+.03,h+.47,.02,d-.02,M(0xc9b28a))}
+   else{b(0,.05,.1,h-.04,d-.05,d);b(.02,w-.02,h+.03,h+.47,0,.012,M(0xc9b28a))}break; // blat + jedna noga z przodu + tablica narzędziowa przy ścianie
   case'rack':{const lv=it.levels||[h];lv.forEach(y=>b(0,w,y-.018,y,0,d));
    if(it.posts){const y1=Math.max(...lv)+.03,yb=lv[0]-.06;[[0,0],[w-.03,0],[0,d-.03],[w-.03,d-.03]].forEach(([x,z])=>b(x,x+.03,yb,y1,z,z+.03,M(COL.grey)))}}break;
   case'tools':{const back=frontOf(it)==='-z',zw=back?d:0,s=back?-1:1,zz=(a,q)=>[Math.min(zw+s*a,zw+s*q),Math.max(zw+s*a,zw+s*q)];
@@ -326,16 +331,19 @@ function itemSolids(){const out=[];state.items.filter(it=>visible(it)&&it.kind!=
  if(it.kind==='shed'){out.push(...shedRects(it));return} // szopka: kolizje tylko ze ścianami, przez drzwi można wejść
  const[fw,fd]=footprint(it);out.push([it.x-fw/2,it.x+fw/2,it.z-fd/2,it.z+fd/2])});return out}
 // ściany szopki jako prostokąty w układzie świata (obrót co 90°)
-function shedRects(it){const w=it.w,d=it.d,t=.06,X0=-w/2,X1=w/2,Z0=-d/2,Z1=d/2,dr=it.door||[d/2-.4,d/2+.4],a=-it.rot*Math.PI/180,c=Math.round(Math.cos(a)),s=Math.round(Math.sin(a));
- return[[X0,X0+t,Z0,Z1],[X0,X1,Z0,Z0+t],[X0,X1,Z1-t,Z1],[X1-t,X1,Z0,Z0+dr[0]],[X1-t,X1,Z0+dr[1],Z1]].map(([x0,x1,z0,z1])=>{
+function shedDoors(it){return it.doors||[(it.door||[it.d/2-.4,it.d/2+.4]).concat('z1')]}
+function shedRects(it){const w=it.w,d=it.d,t=.06,X0=-w/2,X1=w/2,Z0=-d/2,Z1=d/2,a=-it.rot*Math.PI/180,c=Math.round(Math.cos(a)),s=Math.round(Math.sin(a));
+ const fr=[];let zc=Z0;shedDoors(it).slice().sort((p,q)=>p[0]-q[0]).forEach(([p,q])=>{if(Z0+p>zc)fr.push([X1-t,X1,zc,Z0+p]);zc=Z0+q});if(Z1>zc)fr.push([X1-t,X1,zc,Z1]);
+ return[[X0,X0+t,Z0,Z1],[X0,X1,Z0,Z0+t],[X0,X1,Z1-t,Z1]].concat(fr).map(([x0,x1,z0,z1])=>{
   const p=[[x0,z0],[x1,z1]].map(([x,z])=>[it.x+x*c+z*s,it.z-x*s+z*c]);return[Math.min(p[0][0],p[1][0]),Math.max(p[0][0],p[1][0]),Math.min(p[0][1],p[1][1]),Math.max(p[0][1],p[1][1])]})}
 // ---------- szopka ogrodowa (wspólna dla makiety i trybu realistycznego) ----------
 // Lokalnie: −x = ściana przy płocie sąsiada (wysoka, it.h), +x = ściana z drzwiami (niska, it.h−fall); dach spada w stronę +x.
-// Pola: fall (spadek dachu), door [z0,z1] od krawędzi −z, doorH, win [z0,z1,y0,y1] (okienko w ścianie z drzwiami).
+// Pola: fall (spadek dachu), doors [[z0,z1,'double'|'z0'|'z1' (strona zawiasów)],…] od krawędzi −z (albo stare door [z0,z1]), doorH, win [z0,z1,y0,y1].
+// Rynna i beczka przy końcu z0 (lokalnie), okap mały (3 cm) przy z1.
 // Z góry: ściany obniżone (×0,42) i bez dachu, jak w mieszkaniu.
 function buildShed(it,g,m,real){
  const w=it.w,d=it.d,hi=it.h,lo=hi-(it.fall!=null?it.fall:.25),t=.06,X0=-w/2,X1=w/2,Z0=-d/2,Z1=d/2,walk=mode==='walk';
- const dr=it.door||[d/2-.4,d/2+.4],da=Z0+dr[0],db=Z0+dr[1],dh=it.doorH||1.85,wn=it.win,top=x=>hi-(x-X0)*(hi-lo)/w;
+ const DR=shedDoors(it),dh=it.doorH||1.85,wn=it.win,top=x=>hi-(x-X0)*(hi-lo)/w;
  const W=new THREE.Group();W.scale.y=walk?1:.42;g.add(W);
  const add=(geo,mt,x,y,z,p)=>{const o=new THREE.Mesh(geo,mt);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p.add(o);return o};
  const bx=(x0,x1,y0,y1,z0,z1,mt,p=W)=>add(boxUV(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0)),mt,(x0+x1)/2,(y0+y1)/2,(z0+z1)/2,p);
@@ -346,23 +354,24 @@ function buildShed(it,g,m,real){
  const ex=(dep,mt,z0)=>add(boxUV(new THREE.ExtrudeGeometry(sh,{depth:dep,bevelEnabled:false})),mt,0,0,z0,W);
  ex(t-.012,o,Z0);ex(.012,i,Z0+t-.012);ex(.012,i,Z1-t);ex(t-.012,o,Z1-t+.012); // ściany szczytowe (skośna góra), okładzina zewn. + wewn.
  // ściana z drzwiami i okienkiem (wnętrze od −x)
- const fm=[o,i,o,o,o,o],holes=[[da,db,0,dh]];if(wn)holes.push([Z0+wn[0],Z0+wn[1],wn[2],wn[3]]);holes.sort((a,b)=>a[0]-b[0]);
+ const fm=[o,i,o,o,o,o],holes=DR.map(([a,b])=>[Z0+a,Z0+b,0,dh]);if(wn)holes.push([Z0+wn[0],Z0+wn[1],wn[2],wn[3]]);holes.sort((a,b)=>a[0]-b[0]);
  let zc=Z0+t;holes.forEach(([a,b,y0,y1])=>{if(a>zc)bx(X1-t,X1,0,lo,zc,a,fm);if(y0>0)bx(X1-t,X1,0,y0,a,b,fm);bx(X1-t,X1,y1,lo,a,b,fm);zc=b});
  if(Z1-t>zc)bx(X1-t,X1,0,lo,zc,Z1-t,fm);
  if(wn){const a=Z0+wn[0],b=Z0+wn[1];bx(X1-t/2-.004,X1-t/2+.004,wn[2],wn[3],a,b,m.glass).castShadow=false;
   [[a,a+.03],[b-.03,b]].forEach(([p,q])=>bx(X1-t,X1+.008,wn[2],wn[3],p,q,m.trim));[[wn[2],wn[2]+.03],[wn[3]-.03,wn[3]]].forEach(([p,q])=>bx(X1-t,X1+.008,p,q,a,b,m.trim))}
- [[da-.04,da],[db,db+.04]].forEach(([p,q])=>bx(X1,X1+.012,0,dh+.04,p,q,m.trim));bx(X1,X1+.012,dh,dh+.04,da,db,m.trim); // opaska drzwi
- // skrzydło drzwi otwarte na zewnątrz (zawiasy od strony ogrodu, otwiera się do ściany szczytowej)
- const pv=new THREE.Group();pv.position.set(X1+.03,0,db);pv.rotation.y=-110*Math.PI/180;W.add(pv);const dw=db-da;
- bx(-.02,.02,.02,dh-.01,-dw+.005,-.005,m.door,pv);
- if(real){bx(-.022,-.018,.25,dh-.25,-dw+.03,-dw+.05,m.trim,pv);[.02,-.042].forEach(x=>bx(x,x+.022,.98,1.01,-dw+.05,-dw+.19,m.handle,pv))}
+ // drzwi: opaski + skrzydła otwarte na zewnątrz (~105°); 'double' = dwa skrzydła z zawiasami po bokach
+ DR.forEach(([a,b,hg])=>{const da=Z0+a,db=Z0+b;[[da-.04,da],[db,db+.04]].forEach(([p,q])=>bx(X1,X1+.012,0,dh+.04,p,q,m.trim));bx(X1,X1+.012,dh,dh+.04,da,db,m.trim);
+  const leaf=(z,dw,s)=>{const pv=new THREE.Group();pv.position.set(X1+.03,0,z);pv.rotation.y=s*105*Math.PI/180;W.add(pv); // s=+1: zawias przy z0, skrzydło w +z
+   const z0=s>0?.005:-dw+.005,z1=s>0?dw-.005:-.005,zf=s>0?dw:-dw;bx(-.02,.02,.02,dh-.01,z0,z1,m.door,pv);
+   if(real){bx(-.022,-.018,.25,dh-.25,zf-.05*Math.sign(zf),zf-.03*Math.sign(zf),m.trim,pv);[.02,-.042].forEach(x=>bx(x,x+.022,.98,1.01,Math.min(zf-.05*Math.sign(zf),zf-.17*Math.sign(zf)),Math.max(zf-.05*Math.sign(zf),zf-.17*Math.sign(zf)),m.handle,pv))}};
+  if(hg==='double'){leaf(da,(db-da)/2,1);leaf(db,(db-da)/2,-1)}else if(hg==='z0')leaf(da,db-da,1);else leaf(db,db-da,-1)});
  if(real)[[X0,Z0,hi],[X0,Z1,hi],[X1,Z0,lo],[X1,Z1,lo]].forEach(([x,z,hh])=>bx(x-.014,x+.014,0,hh,z-.014,z+.014,m.trim)); // narożniki
- const ovL=.04,ovR=.15,ov0=.03,ov1=.08,xb=X1+ovR,gx=xb+.05;
+ const ovL=.04,ovR=.15,ov0=.08,ov1=.03,xb=X1+ovR,gx=xb+.05;
  if(walk){const rt=.06,a=Math.atan((hi-lo)/w),xa=X0-ovL,xc=(xa+xb)/2,zm=(Z0-ov0+Z1+ov1)/2; // dach (przy płocie 4 cm okapu, od tarasu 15 cm)
   const rf=add(boxUV(new THREE.BoxGeometry((xb-xa)/Math.cos(a),rt,d+ov0+ov1)),m.roof,xc,top(xc)+rt/2/Math.cos(a),zm,g);rf.rotation.z=-a;
   const gy=top(xb)-.05,gt=add(new THREE.CylinderGeometry(.045,.045,d+ov0+ov1,16),m.gutter,gx,gy,zm,g);gt.rotation.x=Math.PI/2; // rynna
-  add(new THREE.CylinderGeometry(.035,.035,gy-.75,12),m.gutter,gx,(gy+.75)/2,Z1+.05,g)} // rura spustowa
- add(new THREE.CylinderGeometry(.28,.26,.75,32),m.barrel,gx-.05,.375,Z1+.3,g); // beczka na deszczówkę
+  add(new THREE.CylinderGeometry(.035,.035,gy-.75,12),m.gutter,gx,(gy+.75)/2,Z0-.05,g)} // rura spustowa
+ add(new THREE.CylinderGeometry(.28,.26,.75,32),m.barrel,gx-.05,.375,Z0-.3,g); // beczka na deszczówkę
 }
 
 // =====================================================================
@@ -704,7 +713,7 @@ function buildReal(it){
    [0,1,2,3,4].forEach(q=>{const x=X0+.68+q*.05;bx(x-.006,x+.006,h+.12,h+.24,zp,zp+.01,MAT.steel);bx(x-.012,x+.012,h+.24,h+.33,zp,zp+.025,matFor([0xb33a2e,0xe0b030,0x2f5f8f][q%3]),.004)});
    bx(X0+.95,X1-.15,h+.15,h+.35,zp,zp+.004,MAT.steel);bx(X1-.15,X1-.1,h+.17,h+.33,zp,zp+.03,wd,.01); // piła
    bx(X0+.12,X0+.32,h,h+.09,Z1-.13,Z1+.02,matFor(0x2f5f8f),.008); // imadło
-   bx(X0+.12,X0+.6,fl,fl+.24,Z0+.1,Z0+.42,matFor(0xb33a2e),.012);bx(X0+.3,X0+.42,fl+.24,fl+.26,Z0+.22,Z0+.3,MAT.blackMetal); // skrzynka narzędziowa
+   bx(X0+.06,X0+.46,fl,fl+.24,Z0+.1,Z0+.42,matFor(0xb33a2e),.012);bx(X0+.2,X0+.32,fl+.24,fl+.26,Z0+.22,Z0+.3,MAT.blackMetal); // skrzynka narzędziowa
    break}
   case'rack':{const lv=(it.levels||[h]).slice(),bm=MAT.shedIn;
    if(it.posts){const y1=Math.max(...lv)+.03,yb=lv[0]-.06;[[X0+.015,Z0+.015],[X1-.015,Z0+.015],[X0+.015,Z1-.015],[X1-.015,Z1-.015]].forEach(([x,z])=>bx(x-.015,x+.015,yb,y1,z-.015,z+.015,MAT.steel))}
@@ -788,11 +797,11 @@ function makeReal(){
   for(let i=0;i<5;i++)mesh(foliage((.55+r()*.35)*s,seed+i),MAT.leaves,x+(r()-.5)*.9*s,(2.1+r()*1.1)*s,z+(r()-.5)*.9*s,base)};
  tree(3.6,11.4,1.1,'t1');const tr=rngOf('las');
  for(let i=0;i<34;i++){const a=tr()*Math.PI*1.25-Math.PI*.12,d=13+tr()*22,x=2.1+Math.cos(a)*d,z=7+Math.sin(a)*d;if(z<7.5)continue;tree(x,z,1.3+tr()*1.4,'f'+i)}
- // stolik i dwa krzesła na tarasie (przesunięte od szopki)
- mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.75,.72,7.55,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.75,.36,7.55,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.75,.01,7.55,base);
- [[2.27,7.55,Math.PI/2],[3.23,7.55,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,0,z);c.rotation.y=ry;base.add(c);
+ // stolik i dwa krzesła na tarasie
+ mesh(new THREE.CylinderGeometry(.3,.3,.02,32),MAT.fence,2.3,.72,7.55,base);mesh(new THREE.CylinderGeometry(.02,.02,.7,10),MAT.fence,2.3,.36,7.55,base);mesh(new THREE.CylinderGeometry(.2,.2,.02,24),MAT.fence,2.3,.01,7.55,base);
+ [[1.82,7.55,Math.PI/2],[2.78,7.55,-Math.PI/2]].forEach(([x,z,ry])=>{const c=new THREE.Group();c.position.set(x,0,z);c.rotation.y=ry;base.add(c);
   mesh(boxUV(RB(.42,.03,.42,.008,1)),MAT.fence,0,.45,0,c);mesh(boxUV(RB(.42,.4,.03,.008,1)),MAT.fence,0,.68,-.2,c);[[-.19,-.19],[.19,-.19],[-.19,.19],[.19,.19]].forEach(([a,b])=>mesh(new THREE.CylinderGeometry(.012,.012,.45,8),MAT.fence,a,.225,b,c))});
- plantInto(base,3.55,0,7.2,.7,rngOf('pot1'),.4);
+ plantInto(base,1.3,0,7.25,.7,rngOf('pot1'),.4);
  // elewacja budynku (3 kondygnacje) z oknami sąsiadów
  const fz=6.95;wbox(-9,1.72,0,9.4,fz,fz+.04,MAT.plaster,upper);wbox(3.42,13,0,9.4,fz,fz+.04,MAT.plaster,upper);wbox(1.72,3.42,GDOOR,9.4,fz,fz+.04,MAT.plaster,upper);
  [2.95,5.9].forEach(y=>wbox(-9,13,y-.14,y,fz+.04,fz+.1,MAT.plaster2,upper));wbox(-9,13,9.2,9.4,fz+.04,fz+.12,MAT.plaster2,upper);
