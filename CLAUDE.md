@@ -61,10 +61,13 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - Wybór zapisany w `localStorage` (klucz `a3-milczanska-styl`), link `index.html?styl=real` otwiera od razu ten tryb.
 - `makeReal()` (raz, przy pierwszym włączeniu): tekstury proceduralne w canvasie (`T`, deska, dąb, płytki, kamień, tkanina, trawa…),
   materiały PBR (`MAT`, fabryka `RM` – kolory w sRGB), mapa otoczenia z PMREM, architektura z tej samej listy `WALLS` co makieta,
-  płytki w łazience, cokoły, drzwi, zasłony, oprawy, obraz, ogród, elewacja, niebo, światła. Grupy: `REAL.walls` (skalowane w widoku z góry),
+  cokoły, drzwi, zasłony, oprawy, obraz, ogród, elewacja, niebo, światła. Grupy: `REAL.walls` (skalowane w widoku z góry),
   `REAL.upper` (ukrywane z góry: sufit, nadproża, elewacja, lampy), `REAL.base`.
 - Meble budowane w lokalnym układzie „front przy +z” (`frontOf(it)`, wyjątki w `FRONT` po id); `mods` i `sink` odwracane, gdy trzeba.
   Nowy rodzaj mebla = `case` w `build` (makieta) i w `buildReal`.
+- Łazienka (22.11.2026): ściany malowane na biało, płytki 60×30 (poziomo) tylko: zabudowa stelaża WC + ściana nad nią do sufitu,
+  ściany w narożniku prysznica do sufitu (z zabudową GK), jedna płytka 60×30 nad umywalką (blat → lustro). Panele płytek rysuje `buildReal`
+  przy meblach (`tile`/`tileBox`, fugi liczone od lewego dolnego rogu panelu), więc idą za meblem. Podłoga łazienki w płytkach.
 - „Pora dnia” (`applyTod`): dzień = słońce przez drzwi tarasowe + światło okna; wieczór = lampa nad stołem, LED pod szafkami, oprawy.
 - Cienie liczone tylko po zmianie (`renderer.shadowMap.autoUpdate=false`, po zmianie ustaw `renderer.shadowMap.needsUpdate=true`).
 - Materiały, kolory, dekoracje (rośliny, książki, obraz, zasłony, meble ogrodowe) są przykładowe – nie wynikają z decyzji właścicieli.

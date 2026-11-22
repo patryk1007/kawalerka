@@ -390,7 +390,7 @@ function texGrad(){const[c,g]=cnv(4,64),gr=g.createLinearGradient(0,0,0,64);gr.a
 function makeTextures(){
  T.oak=tex(texWood('#b8946c','rgba(92,60,32,',512,1024,'oak'),.5,1);
  const[fc,fb]=texFloor();T.floor=tex(fc,1.2,2.4);T.floorB=tex(fb,1.2,2.4,false);
- const wt=texTiles({cols:2,rows:1,base:[228,223,214],jit:4,grout:'#cfcac1',gw:3,veins:7,seed:'wt',noise:.18});T.wallTile=tex(wt[0],1.2,1.2);T.wallTileB=tex(wt[1],1.2,1.2,false);
+ const wt=texTiles({cols:2,rows:4,base:[228,223,214],jit:4,grout:'#cfcac1',gw:3,veins:3,seed:'wt',noise:.18});T.wallTile=tex(wt[0],1.2,1.2);T.wallTileB=tex(wt[1],1.2,1.2,false);
  const ft=texTiles({cols:2,rows:2,base:[128,126,121],jit:7,grout:'#6c6964',gw:3,seed:'ft',noise:.45});T.floorTile=tex(ft[0],1.2,1.2);T.floorTileB=tex(ft[1],1.2,1.2,false);
  const sb=texTiles({W:512,H:512,cols:4,rows:8,base:[245,244,240],jit:3,grout:'#d8d5ce',gw:3,stagger:true,seed:'sub',noise:.12});T.sub=tex(sb[0],.8,.8);T.subB=tex(sb[1],.8,.8,false);
  const pv=texTiles({W:512,H:512,cols:4,rows:4,base:[184,180,171],jit:9,grout:'#7f7b74',gw:4,seed:'pave',noise:.4});T.pave=tex(pv[0],1.6,1.6);T.paveB=tex(pv[1],1.6,1.6,false);
@@ -515,6 +515,9 @@ function buildReal(it){
    if(handle==='bar'){const hl=Math.min(.2,mw*.55);bx(x+mw/2-hl/2,x+mw/2+hl/2,b-.05,b-.036,Z1,Z1+.02,MAT.handle,.005)}
    else if(handle==='vbar'&&ri===0){const hx=i%2?x+.045:x+mw-.045,hl=Math.min(.32,(b-a)*.35),hy=Math.min(b-hl/2-.05,Math.max(a+hl/2+.05,1.05));bx(hx-.006,hx+.006,hy-hl/2,hy+hl/2,Z1,Z1+.022,MAT.handle,.005)}});x+=mw})};
  const plinth=(y1=.1)=>bx(X0+.01,X1-.01,0,y1,Z0+.02,Z1-.06,MAT.plinth);
+ // płytki 60×30: UV od lewego dolnego rogu panelu, więc siatka fug zaczyna się od krawędzi (pełna płytka przy podłodze/blacie)
+ const tileBox=(x0,x1,y0,y1,z0,z1)=>add(boxUV(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0).translate((x1-x0)/2,(y1-y0)/2,(z1-z0)/2)),MAT.wallTile,x0,y0,z0);
+ const tile=(x0,x1,y0,y1,z0,z1)=>{if(mode==='walk')tileBox(x0,x1,y0,y1,z0,z1)}; // okładzina ściany (z góry ukryta, jak ściany)
  switch(it.kind){
   case'wardrobe':{
    if(/rega/i.test(it.name)){const t=.018;bx(X0,X0+t,0,h,Z0,Z1,body);bx(X1-t,X1,0,h,Z0,Z1,body);bx(X0,X1,0,.06,Z0,Z1,body);bx(X0,X1,h-t,h,Z0,Z1,body);bx(X0+t,X1-t,.06,h-t,Z0,Z0+.008,body);
@@ -530,7 +533,8 @@ function buildReal(it){
    const ys=sp.concat([h]);fronts(sp[0],h,null,body,'vbar',ys.slice(0,-1).map((y,i)=>[y,ys[i+1]]));break}
   case'upper':{
    if(it.color===COL.tiles){ // zabudowa / obudowa GK: płytki w łazience, farba poza nią
-    const bath=it.x>2&&it.x<4.25&&it.z<1.96;bx(X0,X1,0,h,Z0,Z1,bath?MAT.wallTile:MAT.paint);
+    const bath=it.x>2&&it.x<4.25&&it.z<1.96;if(bath)tileBox(X0,X1,0,h,Z0,Z1);else bx(X0,X1,0,h,Z0,Z1,MAT.paint);
+    if(bath&&face==='+z'&&h<H-.05&&it.z+it.d/2>1.9)tile(X0,X1,h,H,Z1-.008,Z1); // ściana za WC nad zabudową stelaża, do sufitu
     if(it.id==='nSt'){const wc=state.items.find(o=>o.kind==='wc'&&visible(o)),px=wc?Math.max(X0+.15,Math.min(X1-.15,wc.x-it.x)):0,zp=-it.d/2; // przycisk spłuczki od strony WC (−z)
      mesh(boxUV(RB(.25,.16,.008,.003,1)),MAT.chrome,px,.95,zp-.004,g);mesh(boxUV(RB(.07,.11,.006,.003,1)),MAT.steel,px-.04,.95,zp-.01,g);mesh(boxUV(RB(.07,.11,.006,.003,1)),MAT.steel,px+.04,.95,zp-.01,g)}
     break}
@@ -586,19 +590,19 @@ function buildReal(it){
   case'sink':{const cab=it.color===COL.oak,tk=cab?.03:.14;
    if(cab){bx(X0+.005,X1-.005,.45,h-.15,Z0,Z1-FT,MAT.oak);bx(X0+.005,X0+.02,h-.15,h-tk,Z0,Z1-FT,MAT.oak);bx(X1-.02,X1-.005,h-.15,h-tk,Z0,Z1-FT,MAT.oak);fronts(.45,h-tk,[L],MAT.oak,'none');bx(X0+.04,X1-.04,h-tk-.035,h-tk-.025,Z1-.004,Z1+.001,MAT.plinth)}
    else cyl(.02,.02,.32,0,h-tk-.32,Z0+.08,MAT.chrome);
-   basinTop(P,X0,X1,Z0,Z1,h,tk);faucet(P,0,h,Z0+.055,.2,.12);break}
-  case'bath':{const t=.07,m=MAT.acrylic;bx(X0,X1,0,.1,Z0,Z1,m);bx(X0,X1,0,h,Z0,Z0+t,m,.015);bx(X0,X1,0,h,Z1-t,Z1,m,.015);bx(X0,X0+t,0,h,Z0,Z1,m,.015);bx(X1-t,X1,0,h,Z0,Z1,m,.015);
+   basinTop(P,X0,X1,Z0,Z1,h,tk);faucet(P,0,h,Z0+.055,.2,.12);tile(-.3,.3,h,h+.3,Z0,Z0+.008);break}
+  case'bath':{const t=.07,m=MAT.acrylic;tile(X0,X1,0,H,Z0,Z0+.008);bx(X0,X1,0,.1,Z0,Z1,m);bx(X0,X1,0,h,Z0,Z0+t,m,.015);bx(X0,X1,0,h,Z1-t,Z1,m,.015);bx(X0,X0+t,0,h,Z0,Z1,m,.015);bx(X1-t,X1,0,h,Z0,Z1,m,.015);
    cyl(.025,.025,.004,X0+.25,.1,0,MAT.chrome);bx(-.1,.1,h+.24,h+.3,Z0-.0,Z0+.05,MAT.chrome,.01);bx(-.015,.015,h+.22,h+.25,Z0+.05,Z0+.15,MAT.chrome,.006);break}
   case'wc':{const hung=it.v==='nasz'||/podwiesz/i.test(it.name),m=MAT.ceramic,sx=Math.min(L/2,.185),rz=Math.min(.26,D*.48),zc=Z1-rz,yt=h-.04,yb=hung?h-.34:0;
    const bw=add(new THREE.CylinderGeometry(1,.72,1,40),m,0,(yt+yb)/2,zc);bw.scale.set(sx,yt-yb,rz);
    bx(-sx*.85,sx*.85,yb+(hung?.02:.1),yt,Z0,zc,m,.04);
    const st=add(new THREE.CylinderGeometry(1,1,.022,40),m,0,yt+.011,zc-.01);st.scale.set(sx+.004,1,rz+.004);
    const ld=add(new THREE.CylinderGeometry(1,1,.018,40),m,0,yt+.031,zc-.015);ld.scale.set(sx,1,rz-.005);
-   if(!hung){bx(-.18,.18,h,h+.36,Z0,Z0+.17,m,.03);cyl(.025,.025,.008,0,h+.36,Z0+.085,MAT.chrome)}break}
+   if(!hung){tile(-.3,.3,0,H,Z0,Z0+.008);bx(-.18,.18,h,h+.36,Z0,Z0+.17,m,.03);cyl(.025,.025,.008,0,h+.36,Z0+.085,MAT.chrome)}break}
   case'washer':{const m=MAT.appl;bx(X0,X1,0,h,Z0,Z1,m,.015);bx(X0+.01,X1-.01,h-.11,h-.01,Z1-.002,Z1+.002,MAT.applGrey);const yc=h*.47;
    add(new THREE.TorusGeometry(.165,.025,16,48),MAT.chrome,0,yc,Z1+.01);add(new THREE.CircleGeometry(.16,48),MAT.blackGlass,0,yc,Z1+.006);
    const kn=add(new THREE.CylinderGeometry(.025,.025,.02,24),MAT.chrome,X1-.11,h-.06,Z1+.01);kn.rotation.x=Math.PI/2;bx(X0+.05,X0+.19,h-.075,h-.045,Z1+.002,Z1+.004,MAT.blackGlass);break}
-  case'shower':{bx(X0,X1,0,.04,Z0,Z1,MAT.tray,.01);const gh=Math.min(h,2);bx(X0,X0+.008,.04,.04+gh,Z0,Z1,MAT.glass).castShadow=false;bx(X0,X1,.04,.04+gh,Z0,Z0+.008,MAT.glass).castShadow=false;break}
+  case'shower':{bx(X0,X1,0,.04,Z0,Z1,MAT.tray,.01);tile(X1-.008,X1,0,H,Z0,Z1);tile(X0,X1,0,H,Z1-.008,Z1);const gh=Math.min(h,2);bx(X0,X0+.008,.04,.04+gh,Z0,Z1,MAT.glass).castShadow=false;bx(X0,X1,.04,.04+gh,Z0,Z0+.008,MAT.glass).castShadow=false;break}
   case'showerq':{const w=L,d=D,gh=Math.min(h,2),r=Math.min(w,d)*.6,sx=w-r,sz=d-r,cx=-w/2+r,cz=-d/2+r;
    const sh=new THREE.Shape();sh.moveTo(w/2,d/2);sh.lineTo(-w/2,d/2);sh.lineTo(-w/2,cz);sh.absarc(cx,cz,r,Math.PI,Math.PI*1.5,false);sh.lineTo(w/2,-d/2);sh.lineTo(w/2,d/2);
    const tg=new THREE.ExtrudeGeometry(sh,{depth:.036,bevelEnabled:true,bevelThickness:.004,bevelSize:.003,bevelSegments:2,curveSegments:32});tg.rotateX(Math.PI/2);tg.translate(0,.04,0);add(tg,MAT.tray);
@@ -608,6 +612,7 @@ function buildReal(it){
    bx(-w/2,-w/2+.02,.04,.04+gh,d/2-.02,d/2,MAT.chrome);bx(w/2-.02,w/2,.04,.04+gh,-d/2,-d/2+.02,MAT.chrome);
    const ha=1.25*Math.PI;cyl(.009,.009,.3,cx+r*Math.sin(ha)-.012,.85,cz+r*Math.cos(ha)-.012,MAT.chrome,12);
    bx(.05,.17,.0405,.043,.05,.17,MAT.steel);
+   tile(w/2-.008,w/2,0,H,-d/2,d/2);tile(-w/2,w/2,0,H,d/2-.008,d/2);
    const px=w/2-.3,pz=d/2-.03;cyl(.012,.012,1.08,px,1,pz,MAT.chrome,16);const arm=add(new THREE.CylinderGeometry(.01,.01,.32,12),MAT.chrome,px,2.07,pz-.16);arm.rotation.x=Math.PI/2;
    cyl(.13,.13,.012,px,2.04,pz-.32,MAT.chrome,40);bx(px-.045,px+.045,.95,1.12,pz-.03,pz+.03,MAT.chrome,.01);
    const hs=add(new THREE.CylinderGeometry(.02,.014,.24,16),MAT.chrome,px-.06,1.42,pz-.02);hs.rotation.z=.25;break}
@@ -637,9 +642,8 @@ function makeReal(){
  // ściany (te same co w makiecie) + szacht
  WALLS.forEach(([x0,x1,z0,z1,y0,y1])=>wbox(x0,x1,y0,y1,z0,z1,MAT.paint,y0===0?walls:upper));
  wbox(3.65,4.25,0,H,2.07,2.76,MAT.paint);
- // łazienka: płytki do sufitu (okładzina 8 mm)
- const tt=.008;wbox(2,4.25,0,H,0,tt,MAT.wallTile);wbox(4.25-tt,4.25,0,H,0,1.95,MAT.wallTile);wbox(2,4.25,0,H,1.95-tt,1.95,MAT.wallTile);
- wbox(2,2+tt,0,H,0,.35,MAT.wallTile);wbox(2,2+tt,0,H,1.15,1.95,MAT.wallTile);wbox(2,2+tt,DOOR,H,.35,1.15,MAT.wallTile,upper);
+ // łazienka: ściany malowane na biało; płytki 60×30 tylko za WC, przy prysznicu i jedna nad umywalką – rysuje je buildReal przy meblach
+ const tt=.008;
  // podłogi
  plane(0,1.88,0,2.07,0,MAT.floor);plane(0,4.25,2.07,6.7,0,MAT.floor);plane(1.88,2,.35,1.15,0,MAT.floor);plane(2,4.25,0,1.95,0,MAT.floorTile);
  wbox(1.9,2.01,0,.005,.35,1.15,MAT.steel,walls,false);wbox(1.72,3.42,0,.02,6.7,6.95,MAT.frame,walls,false);
