@@ -58,8 +58,10 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
  <p class="sub">27,3 m² · przedpokój, łazienka, pokój z aneksem, ogródek</p>
  <div class="lbl">Widok</div>
  <div class="seg" id="mode"><button data-m="walk" class="on">Spacer</button><button data-m="top">Z góry</button></div>
- <div class="lbl">Łazienka</div>
+ <div class="lbl">Wariant łazienki i kuchni</div>
  <div class="seg" id="bath"><button data-v="dev">Deweloper</button><button data-v="nasz" class="on">Nasz plan</button></div>
+ <div id="frBox"><div class="lbl">Lodówka (nasz plan)</div>
+ <div class="seg" id="fridge"><button data-f="pod" class="on">Podblatowa</button><button data-f="wolna">Wolnostojąca</button></div></div>
  <div class="lbl">Dodaj mebel</div>
  <select id="add"><option value="">Wybierz…</option></select>
  <div id="sel" hidden>
@@ -74,12 +76,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
  <div class="row" style="margin-top:12px"><button class="b" id="copy">Kopiuj układ</button><button class="b" id="reset">Reset</button></div>
  <textarea id="copybox" readonly aria-label="Układ do skopiowania"></textarea>
  <p class="help" id="help"></p>
- <p class="note">Wymiary wg rzutu i karty lokalu dewelopera (±5 cm). Wysokość 2,65 m przyjęta – do zmierzenia po odbiorze. Ścianki działowe i meble poglądowo; nie sprawdza konstrukcji.</p>
+ <p class="note">Wymiary wg rzutu i karty lokalu dewelopera (±5 cm). Wysokość 2,55 m (podana przez właścicieli) – do potwierdzenia po odbiorze. Ścianki działowe i meble poglądowo; nie sprawdza konstrukcji.</p>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 {
-const H=2.65, DOOR=2.05, GDOOR=2.25, EYE=1.62;
+const H=2.55, DOOR=2.05, GDOOR=2.25, EYE=1.62;
 const hud=document.getElementById('hud');
 if(!window.THREE){hud.textContent='Nie udało się wczytać biblioteki 3D.';throw new Error('no three')}
 const cv=document.getElementById('c');
@@ -133,13 +135,31 @@ solids.push([-.3,-.1,6.95,12.3],[4.35,4.55,6.95,12.3],[-.3,4.55,12.15,12.3]);
 const COL={oak:0xd2a878,top:0x3b3f42,tiles:0xa9b0b2,wood:0x6e4a30,white:0xf4f3ef,grey:0x8d9396,dark:0x3b3f42,fabric:0x6f8a91,blue:0x5d7f9b};
 const DEFAULT=[];
 const R=(id,name,kind,x0,x1,z0,z1,h,color,v)=>DEFAULT.push({id,name,kind,x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,h,rot:0,color,v:v||'all'});
+const RX=(o)=>Object.assign(DEFAULT[DEFAULT.length-1],o); // dodatkowe pola ostatnio dodanego mebla
 // przedpokój
-R('szafaP','Szafa w przedpokoju','wardrobe',0,.6,.32,2.04,2.4,COL.oak);
-// kuchnia (wg karty dewelopera)
-R('lod','Lodówka (zabudowa)','tall',1.9,2.52,2.07,2.67,2.1,COL.oak);
-R('blat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak);
-R('blat2','Blat z płytą','cook',3.65,4.25,2.76,4.63,.9,COL.oak);
-R('gorne','Szafki górne','upper',3.9,4.25,2.76,4.63,.72,COL.oak);
+R('szafaP','Szafa w przedpokoju','wardrobe',0,.6,.32,2.04,2.4,COL.oak,'dev');
+// nasz plan: zabudowa na całą wysokość + obudowa przewodu kominowego przy wejściu (wymiar przewodu przyjęty 32×30, do zmierzenia)
+R('nKom','Obudowa przewodu kominowego (GK)','upper',0,.32,.32,.62,H,COL.tiles,'nasz');
+R('nSzP1','Szafa – płytka część przed przewodem','wardrobe',.32,.6,.32,.62,H,COL.oak,'nasz');
+R('nSzP','Szafa w przedpokoju (do sufitu)','wardrobe',0,.6,.62,2.04,H,COL.oak,'nasz');RX({mods:[.47,.47,.48],face:'+x'});
+// kuchnia – deweloper (wg karty dewelopera)
+R('lod','Lodówka (zabudowa)','tall',1.9,2.52,2.07,2.67,2.1,COL.oak,'dev');
+R('blat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak,'dev');
+R('blat2','Blat z płytą','cook',3.65,4.25,2.76,4.63,.9,COL.oak,'dev');
+R('gorne','Szafki górne','upper',3.9,4.25,2.76,4.63,.72,COL.oak,'dev');
+// kuchnia – nasz plan (22.11.2026): szafki wiszące 100 cm pod sufit, przy RTV tylko 3×40 cm
+// pole fr: 'pod' | 'wolna' – przełącznik „Lodówka” (tylko w „Nasz plan”)
+const UY=H-1; // dół szafek wiszących
+// a) lodówka podblatowa: jeden ciąg blatu pod łazienką
+R('nBlatP','Blat: lodówka podblatowa + zmywarka + zlew','sinkc',1.9,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'pod',mods:[.6,.6,.55],sink:[1.25,1.7]});
+R('nGP','Szafki wiszące 100 cm','upper',1.9,3.65,2.07,2.42,1,COL.oak,'nasz');RX({fr:'pod',y:UY,mods:[.6,.6,.55]});
+// b) lodówka wolnostojąca 60×145
+R('nLod','Lodówka wolnostojąca 60×145','fridge',1.9,2.5,2.07,2.69,1.45,COL.white,'nasz');RX({fr:'wolna'});
+R('nBlat1','Blat: zmywarka + zlew','sinkc',2.52,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'wolna',mods:[.6,.53]});
+R('nGW','Szafki wiszące 100 cm','upper',1.9,3.65,2.07,2.42,1,COL.oak,'nasz');RX({fr:'wolna',y:UY,mods:[.62,.6,.53]});
+// ściana od RTV: 3 moduły po 40 cm
+R('nBlat2','Blat z płytą 2-palnikową (3×40)','cook',3.65,4.25,2.76,3.96,.9,COL.oak,'nasz');RX({hob:2,mods:[.4,.4,.4]});
+R('nG2','Szafki wiszące 100 cm (3×40)','upper',3.9,4.25,2.76,3.96,1,COL.oak,'nasz');RX({y:UY,mods:[.4,.4,.4]});
 // pokój
 R('stol','Stół','table',0,.8,2.83,3.63,.75,COL.wood);
 R('kr1','Krzesło','chair',.19,.59,2.35,2.79,.85,COL.dark);
@@ -165,14 +185,15 @@ const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×2
 const addSel=document.getElementById('add');
 addSel.innerHTML+=CATALOG.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
 
-let state={bath:'nasz',items:JSON.parse(JSON.stringify(DEFAULT))};
-const KEY='a3-milczanska-uklad-v5';
+let state={bath:'nasz',fridge:'pod',items:JSON.parse(JSON.stringify(DEFAULT))};
+const KEY='a3-milczanska-uklad-v7';
 try{let s=JSON.parse(localStorage.getItem(KEY));
- if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
+ if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
   if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v1'));
    // v1 -> v2: zostają pozycje, kolory domyślnych mebli z nowej palety (kontrast)
    if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.color=d.color})}
-  // starsze -> v5: łazienka „Nasz plan” z DEFAULT (zmiany 22.11.2026), reszta mebli zostaje na swoich miejscach
+  // starsze -> v7: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
+  if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.v=d.v});
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
  if(s&&s.items)state=s}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
@@ -181,17 +202,24 @@ const furn=new THREE.Group();scene.add(furn);
 function build(it){
  const g=new THREE.Group(),w=it.w,d=it.d,h=it.h,c=M(it.color);
  const b=(x0,x1,y0,y1,z0,z1,m=c)=>box(x0-w/2,x1-w/2,y0,y1,z0-d/2,z1-d/2,m,g);
+ // linie podziału frontów: moduły it.mods [m] wzdłuż dłuższego boku; front od strony pokoju (-x gdy d>w, chyba że face:'+x'; +z gdy w≥d)
+ const seams=(y0,y1)=>{if(!it.mods)return;const sm=M(0x4a3a2c);let t=0;it.mods.slice(0,-1).forEach(m=>{t+=m;
+  if(d>w){const xf=it.face==='+x'?w:0;b(xf-.003,xf+.003,y0,y1,t-.004,t+.004,sm)}else b(t-.004,t+.004,y0,y1,d-.002,d+.003,sm)})};
  switch(it.kind){
   case'sofa':b(0,w,.1,.45,0,d);
    if(w<d){b(0,.22,.45,h,0,d);b(0,w,.1,.65,0,.18);b(0,w,.1,.65,d-.18,d)}else{b(0,w,.45,h,0,.22);b(0,.18,.1,.65,0,d);b(w-.18,w,.1,.65,0,d)}break;
   case'bed':b(0,w,0,.3,0,d,M(COL.wood));b(.03,w-.03,.3,h,.08,d-.03,M(0xf1efe9));b(0,w,0,1,0,.08,M(COL.wood));b(.05,w-.05,h,h+.06,.12,.12+.45,c);break;
   case'table':b(0,w,h-.04,h,0,d);[[0,0],[w-.05,0],[0,d-.05],[w-.05,d-.05]].forEach(([x,z])=>b(x,x+.05,0,h-.04,z,z+.05));break;
   case'chair':b(0,w,.42,.46,0,d);[[0,0],[w-.04,0],[0,d-.04],[w-.04,d-.04]].forEach(([x,z])=>b(x,x+.04,0,.42,z,z+.04));if(w<d)b(0,.05,.46,h,0,d);else b(0,w,.46,h,0,.05);break;
-  case'wardrobe':b(0,w,0,h,0,d);break;
+  case'wardrobe':b(0,w,0,h,0,d);seams(.02,h-.02);break;
   case'tall':b(0,w,0,h,0,d);break;
-  case'upper':b(0,w,it.id==='gorne'?1.45:0,it.id==='gorne'?1.45+h:h,0,d);break;
-  case'sinkc':b(0,w,0,h-.04,0,d);b(0,w,h-.04,h,0,d,M(COL.top));b(w*.55,w*.9,h,h+.01,.1,d-.1,M(0xd8dcdd));break;
-  case'cook':b(0,w,0,h-.04,0,d);b(0,w,h-.04,h,0,d,M(COL.top));b(.05,w-.05,h,h+.01,d*.38,d*.38+.58,M(0x111111));break;
+  case'upper':{const y=it.y!=null?it.y:(it.id==='gorne'?1.45:0);b(0,w,y,y+h,0,d);seams(y+.01,y+h-.01)}break;
+  case'fridge':b(0,w,0,h,0,d);b(0,w,h*.62-.004,h*.62+.004,d,d+.003,M(COL.grey));b(w*.82,w*.86,h*.3,h*.55,d,d+.03,M(COL.grey));b(w*.82,w*.86,h*.7,h*.9,d,d+.03,M(COL.grey));break;
+  case'sinkc':{b(0,w,0,h-.04,0,d);seams(.1,h-.05);b(0,w,h-.04,h,0,d,M(COL.top));const[s0,s1]=it.sink||[w*.55,w*.9];b(s0,s1,h,h+.01,.1,d-.1,M(0xd8dcdd))}break;
+  case'cook':b(0,w,0,h-.04,0,d);b(0,w,h-.04,h,0,d,M(COL.top));seams(.1,h-.05);
+   if(it.hob===2){const zc=Math.min(1,d/2);b(.04,w-.04,h,h+.01,zc-.15,zc+.15,M(0x111111)); // płyta 30×52, palniki jeden za drugim
+    [w*.3,w*.7].forEach(x=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,.004,32),M(0x555a5e));r.position.set(x-w/2,h+.012,zc-d/2);g.add(r)})}
+   else b(.05,w-.05,h,h+.01,d*.38,d*.38+.58,M(0x111111));break;
   case'tv':b(0,w,0,h,0,d);{const s=new THREE.Mesh(new THREE.BoxGeometry(.05,.7,Math.min(Math.max(w,d),1.25)),M(0x111111));if(w<d)s.position.set(w/2-.12,h+.42,0);else{s.rotation.y=Math.PI/2;s.position.set(0,h+.42,-d/2+.12)}s.castShadow=true;g.add(s)}break;
   case'sink':b(0,w,.5,h,0,d);b(.08,w-.08,h,h+.03,.08,d-.08,M(0xe9ecec));break;
   case'bath':b(0,w,0,h,0,d);b(.07,w-.07,h-.02,h+.005,.07,d-.07,M(0xdfe7ea));break;
@@ -219,14 +247,14 @@ const edgeMat=new THREE.LineBasicMaterial({color:0x1c1916});
 const glassEdgeMat=new THREE.LineBasicMaterial({color:0x6d7f86});
 function addEdges(g){g.children.slice().forEach(o=>{if(!o.isMesh)return;
  const l=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,30),o.material===mat.glass?glassEdgeMat:edgeMat);l.raycast=()=>{};o.add(l)})}
-const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath);
+const visible=it=>!it.hidden&&(it.v==='all'||it.v===state.bath)&&(!it.fr||it.fr===(state.fridge||'pod'));
 function rebuild(){
  while(furn.children.length)furn.remove(furn.children[0]);
  state.items.filter(visible).forEach(it=>{const g=build(it);furn.add(g);if(it.id===selId)outline(g)});
  save();syncSel()}
 function outline(g){g.traverse(o=>{if(o.isMesh&&o.material!==mat.glass){o.material=o.material.clone();o.material.emissive=new THREE.Color(0x0d7680);o.material.emissiveIntensity=.35}})}
 function footprint(it){const r=it.rot%180!==0;return r?[it.d,it.w]:[it.w,it.d]}
-function itemSolids(){return state.items.filter(it=>visible(it)&&it.kind!=='rug'&&it.id!=='gorne').map(it=>{const[fw,fd]=footprint(it);return[it.x-fw/2,it.x+fw/2,it.z-fd/2,it.z+fd/2]})}
+function itemSolids(){return state.items.filter(it=>visible(it)&&it.kind!=='rug'&&it.id!=='gorne'&&!(it.y>=1)).map(it=>{const[fw,fd]=footprint(it);return[it.x-fw/2,it.x+fw/2,it.z-fd/2,it.z+fd/2]})}
 
 // ---------- tryby kamery ----------
 let mode='walk',yaw=Math.PI,pitch=-.05,pos=new THREE.Vector3(1.25,EYE,.8);
@@ -238,7 +266,10 @@ function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>
  hud.textContent=m==='walk'?'Spacer · wysokość oczu 162 cm':'Widok z góry · kliknij mebel'}
 document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.querySelectorAll('#bath button').forEach(b=>b.onclick=()=>{state.bath=b.dataset.v;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()});
-function markBath(){document.querySelectorAll('#bath button').forEach(b=>b.classList.toggle('on',b.dataset.v===state.bath))}
+function markBath(){document.querySelectorAll('#bath button').forEach(b=>b.classList.toggle('on',b.dataset.v===state.bath));
+ document.querySelectorAll('#fridge button').forEach(b=>b.classList.toggle('on',b.dataset.f===(state.fridge||'pod')));
+ document.getElementById('frBox').hidden=state.bath!=='nasz'}
+document.querySelectorAll('#fridge button').forEach(b=>b.onclick=()=>{state.fridge=b.dataset.f;markBath();if(selId&&!visible(selItem()))selId=null;rebuild()});
 document.getElementById('toggle').onclick=()=>document.getElementById('panel').classList.toggle('open');
 
 // ---------- zaznaczanie i edycja ----------
@@ -252,8 +283,8 @@ document.getElementById('sRot').onclick=()=>{const it=selItem();if(it){it.rot=(i
 document.getElementById('sDel').onclick=()=>{const it=selItem();if(it){it.hidden=true;selId=null;rebuild()}};
 addSel.onchange=()=>{const c=CATALOG[addSel.value];if(!c)return;const id='u'+Date.now();
  state.items.push({id,name:c[0],kind:c[1],w:c[2],d:c[3],h:c[4],color:c[5],x:2.1,z:4.4,rot:0,v:'all'});selId=id;addSel.value='';setMode('top');rebuild()};
-document.getElementById('reset').onclick=()=>{state={bath:'nasz',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
-document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({lazienka:state.bath,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
+document.getElementById('reset').onclick=()=>{state={bath:'nasz',fridge:'pod',items:JSON.parse(JSON.stringify(DEFAULT))};selId=null;markBath();rebuild()};
+document.getElementById('copy').onclick=()=>{const txt=JSON.stringify({wariant:state.bath,lodowka:state.bath==='nasz'?(state.fridge||'pod'):undefined,meble:state.items.filter(visible).map(i=>({nazwa:i.name,x_cm:Math.round(i.x*100),z_cm:Math.round(i.z*100),szer:Math.round(i.w*100),gleb:Math.round(i.d*100),wys:Math.round(i.h*100),obrot:i.rot}))});
  const box=document.getElementById('copybox');box.value=txt;
  navigator.clipboard.writeText(txt).then(()=>{hud.textContent='Układ skopiowany – wklej go w czacie'}).catch(()=>{box.style.display='block';box.select()})};
 

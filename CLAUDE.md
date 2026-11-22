@@ -25,7 +25,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 ## Wymiary (z karty lokalu dewelopera, ±5 cm)
 | Element | x [m] | z [m] | uwagi |
 |---|---|---|---|
-| Wnętrze całe | 0–4,25 | 0–6,70 | wysokość H=2,65 **przyjęta, do zmierzenia** |
+| Wnętrze całe | 0–4,25 | 0–6,70 | wysokość H=2,55 (podana przez właścicieli 22.11.2026, potwierdzić po odbiorze) |
 | Przedpokój | 0–1,88 | 0–2,07 | 3,72 m², otwarty na pokój |
 | Łazienka | 2,00–4,25 | 0–1,95 | 4,28 m² |
 | Ścianka przedpokój/łazienka | 1,88–2,00 | 0–2,07 | 12 cm, drzwi łazienki z=0,35–1,15 (80 cm), nadproże 2,05 |
@@ -43,11 +43,12 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   W widoku z góry `wallsG.scale.y=0.42`, `lintG` ukryte, sufit ukryty.
 - `DEFAULT` – lista mebli tworzona helperem `R(id,nazwa,kind,x0,x1,z0,z1,h,kolor,wariant)`.
   Obiekt mebla: `{id,name,kind,x,z (środek),w (wzdłuż x),d (wzdłuż z),h,rot (stopnie),color,v,hidden}`.
-- `v`: `'all'` | `'dev'` | `'nasz'`. Przełącznik „Łazienka” ustawia `state.bath` i pokazuje odpowiedni wariant.
+- `v`: `'all'` | `'dev'` | `'nasz'`. Przełącznik „Wariant łazienki i kuchni” ustawia `state.bath` i pokazuje odpowiedni wariant.
+- Pola opcjonalne mebla: `y` (wys. dolnej krawędzi: szafki wiszące, lustro, drabinka), `mods` (linie podziału frontów), `hob:2` (płyta 2-palnikowa), `fr` (wariant lodówki), `sink`, `face:'+x'` (front szafy od +x).
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
-  bath, wc, washer, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
+  bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
-- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v5`; v1–v4 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
+- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v7`; v1–v6 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
@@ -64,11 +65,16 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   lustro 60×80 nad umywalką, dół 110 cm (x 2,85–3,45);
   grzejnik drabinkowy 50×125 na ścianie z umywalką, 115 cm nad podłogą, 16 cm od prawej ściany (x 3,59–4,09; pole `y` = wys. dolnej krawędzi).
   Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
-- Kuchnia = układ dewelopera (L: lodówka + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
-  Do ewentualnej zmiany przez użytkownika.
+- Kuchnia: przełącznik „Wariant łazienki i kuchni” przełącza też kuchnię. „Deweloper” = układ z karty (L: lodówka w zabudowie + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
+  „Nasz plan” (22.11.2026): drugi przełącznik „Lodówka” (pole `fr` + `state.fridge`): `pod` = jeden blat pod łazienką
+  x 1,90–3,65 (lodówka podblatowa 60 + zmywarka 60 + zlew 55), `wolna` = lodówka wolnostojąca 60×145 + blat zmywarka/zlew x 2,52–3,65;
+  przy ścianie od RTV tylko 3×40 cm (z 2,76–3,96) z płytą 2-palnikową 30×52; szafki wiszące 100 cm, góra pod sufitem (dół H−1 = 1,55 m).
+  Linie podziału frontów z pola `mods` (szerokości modułów w m), pozycja zlewu z `sink:[x0,x1]`.
+- Przedpokój „Nasz plan”: szafa do sufitu (z 0,62–2,04) + obudowa GK przewodu kominowego w narożniku przy wejściu
+  (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
 
 ## Pomysły na dalsze kroki
-- Warianty kuchni (przełącznik jak dla łazienki), łóżko vs sofa rozkładana.
+- Łóżko vs sofa rozkładana.
 - Etykiety wymiarów i odległości między meblami w widoku z góry (np. przejście ≥ 90 cm).
 - Punkty elektryczne/wod-kan jako znaczniki na ścianach.
 - Tekstury (płytki, panele), kolory ścian do wyboru.
