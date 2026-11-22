@@ -48,7 +48,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
   bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
-- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v7`; v1–v6 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
+- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v8`; v1–v7 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
@@ -66,9 +66,11 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   grzejnik drabinkowy 50×125 na ścianie z umywalką, 115 cm nad podłogą, 16 cm od prawej ściany (x 3,59–4,09; pole `y` = wys. dolnej krawędzi).
   Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
 - Kuchnia: przełącznik „Wariant łazienki i kuchni” przełącza też kuchnię. „Deweloper” = układ z karty (L: lodówka w zabudowie + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
-  „Nasz plan” (22.11.2026): drugi przełącznik „Lodówka” (pole `fr` + `state.fridge`): `pod` = jeden blat pod łazienką
-  x 1,90–3,65 (lodówka podblatowa 60 + zmywarka 60 + zlew 55), `wolna` = lodówka wolnostojąca 60×145 + blat zmywarka/zlew x 2,52–3,65;
-  przy ścianie od RTV tylko 3×40 cm (z 2,76–3,96) z płytą 2-palnikową 30×52; szafki wiszące 100 cm, góra pod sufitem (dół H−1 = 1,55 m).
+  „Nasz plan” (22.11.2026): lista rozwijana „Wersja kuchni” (tablica `KITCHEN` = {id,name,desc}; meble wersji mają pole `fr` = id; wybór w `state.fridge`).
+  Nowa wersja = wpis w `KITCHEN` + meble z `fr:'<id>'` (brakujące meble z `DEFAULT` dopisują się do zapisanego stanu przy wczytaniu).
+  `pod` = jeden blat pod łazienką x 1,90–3,65 (lodówka podblatowa 60 + zmywarka 60 + zlew 55), `wolna` = lodówka wolnostojąca 60×145 + blat zmywarka/zlew x 2,52–3,65,
+  `slupek` = słupek do sufitu x 1,90–2,50 (kind `slupek`, pole `split` = wysokości poziomych podziałów: cokół 10 cm, lodówka do zabudowy wnęka 140, podział na 1,55 = dół szafek wiszących) + blat zmywarka/zlew x 2,50–3,65;
+  przy ścianie od RTV dolne 3×40 cm (z 2,76–3,96) z płytą 2-palnikową 30×52, wiszące nad nimi 2×60 cm; szafki wiszące 100 cm, góra pod sufitem (dół H−1 = 1,55 m).
   Linie podziału frontów z pola `mods` (szerokości modułów w m), pozycja zlewu z `sink:[x0,x1]`.
 - Przedpokój „Nasz plan”: szafa do sufitu (z 0,62–2,04) + obudowa GK przewodu kominowego w narożniku przy wejściu
   (x 0–0,32, z 0,32–0,62, wymiar przyjęty, do zmierzenia) z płytką szafką 28 cm przed nią. „Deweloper” = szafa 2,40 m.
