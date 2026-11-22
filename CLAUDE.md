@@ -48,7 +48,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
 - `build(it)` rysuje mebel wg `kind`: sofa, bed, table, chair, wardrobe, tall, upper, sinkc, cook, tv, sink,
   bath, wc, washer, fridge, shower, showerq (półokrągły, narożnik w lokalnym +x,+z), ladder (grzejnik drabinkowy), mirror (lustro; oba z opcjonalnym `y` = wys. dolnej krawędzi), rug, plant (domyślnie prostopadłościan). Nowy rodzaj = nowy `case`.
 - `CATALOG` – meble do dodania z listy: `[nazwa, kind, w, d, h, kolor]`.
-- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v9`; v1–v8 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
+- Stan zapisuje się w `localStorage` (klucz `a3-milczanska-uklad-v10`; v1–v9 migrują się z zachowaniem pozycji, przy migracji meble łazienki „nasz” biorą się z `DEFAULT`). Po zmianie `DEFAULT` użyj „Reset”
   albo podbij wersję klucza.
 - Sterowanie: Spacer (WASD/strzałki + przeciąganie myszą; telefon: lewa połowa = chodzenie, prawa = rozglądanie),
   Z góry (przeciąganie mebla, skok 5 cm; tło = obrót; kółko/szczypanie = zoom; R = obrót mebla).
@@ -67,7 +67,7 @@ na etapie koncepcji, przed decyzjami instalacyjnymi. Interfejs i komentarze po p
   Kielich kanalizacji 110 mm jest w narożniku przy szachcie, a rura do WC idzie w zabudowie ze spadkiem ≥2%.
 - Kuchnia: przełącznik „Wariant łazienki i kuchni” przełącza też kuchnię. „Deweloper” = układ z karty (L: lodówka w zabudowie + zmywarka + zlew pod łazienką, płyta wzdłuż prawej ściany).
   „Nasz plan” (22.11.2026): dwie listy rozwijane, osobno dla każdej ściany:
-  „ściana z lodówką” (tablica `FRIDGE_WALL`, pole mebla `fr`, `state.fridge`) i „ściana od RTV” (tablica `RTV_WALL`, pole `rtv`, `state.rtv`: `w2x60` | `w3x40` | `w2x60b` | `w3x40b` – „b” = bez górnych 40×60, tylko dolne wiszące 60×40; `UPX(...,top=false)`).
+  „ściana z lodówką” (tablica `FRIDGE_WALL`, pole mebla `fr`, `state.fridge`) i „ściana od RTV” (tablica `RTV_WALL`, pole `rtv`, `state.rtv`: `w2x60` | `w3x40` | `w2x60b` | `w3x40b` – „b” = bez górnych 60 gł.: wiszące jednej głębokości 40 cm od 1,55 do sufitu; `UPX(...,top=false)`).
   Nowa wersja = wpis {id,name,desc} w odpowiedniej tablicy + meble z `fr:'<id>'` / `rtv:'<id>'` (brakujące meble z `DEFAULT` dopisują się do zapisanego stanu przy wczytaniu).
   `pod` = jeden blat pod łazienką x 1,90–3,65 (lodówka podblatowa 60 + zmywarka 60 + zlew 55), `wolna` = lodówka wolnostojąca 60×145 + blat zmywarka/zlew x 2,52–3,65,
   `slupek` = słupek do sufitu x 1,90–2,50 (kind `slupek`, pole `split` = wysokości poziomych podziałów: cokół 10 cm, lodówka do zabudowy wnęka 140, podziały na 1,55 i 2,15 = linie szafek wiszących) + blat zmywarka/zlew x 2,50–3,65;

@@ -159,7 +159,9 @@ const UPZ=(id,x0,x1,mods,o)=>{R(id+'g','Szafki wiszące górne (40 wys., 60 gł.
  R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',x0,x1,2.07,2.47,.6,COL.oak,'nasz');RX(Object.assign({y:UY,mods},o))};
 // para szafek wiszących wzdłuż ściany od RTV (front −x)
 const UPX=(id,z0,z1,mods,o,top=true)=>{if(top){R(id+'g','Szafki wiszące górne (40 wys., 60 gł.)','upper',3.65,4.25,z0,z1,.4,COL.oak,'nasz');RX(Object.assign({y:UT,mods},o))}
- R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',3.85,4.25,z0,z1,.6,COL.oak,'nasz');RX(Object.assign({y:UY,mods},o))};
+ if(top)R(id+'d','Szafki wiszące dolne (60 wys., 40 gł.)','upper',3.85,4.25,z0,z1,.6,COL.oak,'nasz');
+ else R(id+'d','Szafki wiszące do sufitu (100 wys., 40 gł.)','upper',3.85,4.25,z0,z1,H-UY,COL.oak,'nasz'); // jedna głębokość 40 od 1,55 do sufitu
+ RX(Object.assign({y:UY,mods},o))};
 // a) lodówka podblatowa: jeden ciąg blatu pod łazienką
 R('nBlatP','Blat: lodówka podblatowa + zmywarka + zlew','sinkc',1.9,3.65,2.07,2.67,.9,COL.oak,'nasz');RX({fr:'pod',mods:[.6,.6,.55],sink:[1.25,1.7]});
 UPZ('nGP',1.9,3.65,[.6,.6,.55],{fr:'pod'});
@@ -175,7 +177,7 @@ UPZ('nGS',2.5,3.65,[.6,.55],{fr:'slupek'});
 R('nBlat2','Blat z płytą 2-palnikową (3×40)','cook',3.65,4.25,2.76,3.96,.9,COL.oak,'nasz');RX({hob:2,mods:[.4,.4,.4]});
 UPX('nR60',2.76,3.96,[.6,.6],{rtv:'w2x60'});
 UPX('nR40',2.76,3.96,[.4,.4,.4],{rtv:'w3x40'});
-UPX('nR60b',2.76,3.96,[.6,.6],{rtv:'w2x60b'},false); // bez górnych 40×60 – nad szafkami wolna ściana do sufitu
+UPX('nR60b',2.76,3.96,[.6,.6],{rtv:'w2x60b'},false); // bez górnych 40×60 – szafki 40 gł. od 1,55 do sufitu
 UPX('nR40b',2.76,3.96,[.4,.4,.4],{rtv:'w3x40b'},false);
 // pokój
 R('stol','Stół','table',0,.8,2.83,3.63,.75,COL.wood);
@@ -207,8 +209,8 @@ const FRIDGE_WALL=[
 const RTV_WALL=[
  {id:'w2x60',name:'Wiszące 2×60',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 2 moduły po 60 cm (górne 40×60 gł., dolne 60×40 gł.).'},
  {id:'w3x40',name:'Wiszące 3×40',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące: 3 moduły po 40 cm, fronty w osi z dolnymi szafkami.'},
- {id:'w2x60b',name:'Wiszące 2×60, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące tylko 60 wys. × 40 gł. (1,55–2,15 m), nad nimi 40 cm wolnej ściany.'},
- {id:'w3x40b',name:'Wiszące 3×40, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące tylko 60 wys. × 40 gł. (1,55–2,15 m), 3 moduły po 40 cm, nad nimi 40 cm wolnej ściany.'}];
+ {id:'w2x60b',name:'Wiszące 2×60, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące jednej głębokości 40 cm, od 1,55 m do sufitu (100 wys.), bez górnych 60 gł.'},
+ {id:'w3x40b',name:'Wiszące 3×40, bez górnych',desc:'Dół 3×40 z płytą 2-palnikową. Wiszące jednej głębokości 40 cm, od 1,55 m do sufitu (100 wys.), 3 moduły po 40 cm.'}];
 const CATALOG=[['Łóżko 160×200','bed',1.6,2.1,.5,COL.blue],['Łóżko 140×200','bed',1.4,2.1,.5,COL.blue],['Sofa rozkładana 200','sofa',2,.95,.85,COL.fabric],['Fotel','chair',.8,.8,.85,COL.fabric],['Biurko 120×60','table',1.2,.6,.75,COL.wood],['Stół 120×80','table',1.2,.8,.75,COL.wood],['Krzesło','chair',.44,.44,.85,COL.dark],['Szafa 100×60','wardrobe',1,.6,2.2,COL.oak],['Regał 80×35','wardrobe',.8,.35,1.9,COL.oak],['Komoda 120×45','tall',1.2,.45,.85,COL.oak],['Wyspa / barek 120×60','tall',1.2,.6,.95,COL.oak],['Dywan 160×230','rug',1.6,2.3,.01,0xc9c1b4],['Roślina','plant',.45,.45,1.3,0x4f7a43]];
 const addSel=document.getElementById('add');
 const frSel=document.getElementById('fridge');frSel.innerHTML=FRIDGE_WALL.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
@@ -216,13 +218,13 @@ const rtvSel=document.getElementById('rtv');rtvSel.innerHTML=RTV_WALL.map(k=>`<o
 addSel.innerHTML+=CATALOG.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
 
 let state={bath:'nasz',fridge:'pod',rtv:'w2x60',items:JSON.parse(JSON.stringify(DEFAULT))};
-const KEY='a3-milczanska-uklad-v9';
+const KEY='a3-milczanska-uklad-v10';
 try{let s=JSON.parse(localStorage.getItem(KEY));
- if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v8'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v7'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
+ if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v9'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v8'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v7'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v6'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v5'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v4'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v3'))||JSON.parse(localStorage.getItem('a3-milczanska-uklad-v2'));
   if(!s){s=JSON.parse(localStorage.getItem('a3-milczanska-uklad-v1'));
    // v1 -> v2: zostają pozycje, kolory domyślnych mebli z nowej palety (kontrast)
    if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.color=d.color})}
-  // starsze -> v9: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
+  // starsze -> v10: „Nasz plan” (łazienka + kuchnia) z DEFAULT, wariant domyślnych mebli z DEFAULT; reszta mebli zostaje na swoich miejscach
   if(s&&s.items)s.items.forEach(it=>{const d=DEFAULT.find(x=>x.id===it.id);if(d)it.v=d.v});
   if(s&&s.items)s.items=s.items.filter(it=>it.v!=='nasz').concat(JSON.parse(JSON.stringify(DEFAULT.filter(d=>d.v==='nasz'))))}
  if(s&&s.items){DEFAULT.forEach(d=>{if(!s.items.some(i=>i.id===d.id))s.items.push(JSON.parse(JSON.stringify(d)))}); // nowe meble z DEFAULT (np. nowa wersja kuchni)
